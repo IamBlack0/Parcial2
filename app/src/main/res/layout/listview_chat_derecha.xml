@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Example Message -->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <TextView
+            android:id="@+id/message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#F5FAFE"
+            android:padding="12dp"
+            android:text="VETE A LA VERGsdfsdfssfsdfsdfsdfsdfsdffdsfsdfsfsdfsdfsdfsdsfsdfsdfsdfsdffsfA 😂😂"
+            android:textSize="16sp"
+            android:textColor="#424F63"
+            android:gravity="start"
+            android:layout_gravity="start"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/message_text"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="-19dp"
+            android:layout_marginEnd="12dp"
+            android:text="15:18 PM"
+            android:textColor="#BABEC5"
+            android:textSize="12sp" />
+    </RelativeLayout>
+</LinearLayout>
