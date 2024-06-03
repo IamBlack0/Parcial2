@@ -28,21 +28,5 @@ public class EditarPerfil extends AppCompatActivity {
 
 
 
-    public void CambiarUsuario(View view) {
-        // Lista de usuarios
-        final String[] usuarios = {"Usuario 1", "Usuario 2"};
 
-        // Crear el AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Selecciona un usuario")
-                .setItems(usuarios, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Acción al seleccionar un usuario
-                        Toast.makeText(EditarPerfil.this, "Seleccionaste: " + usuarios[which], Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
-        builder.create().show();
-    }
 }
