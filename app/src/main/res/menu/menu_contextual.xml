@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/EditarPerfil"
+        android:title="Editar Perfil" />
+    <item
+        android:id="@+id/agregarContactos"
+        android:title="Agregar Contactos" />
+    <item
+        android:id="@+id/CambiarUsuario"
+        android:title="Cambiar Usuario" />
+</menu>

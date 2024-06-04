@@ -8,7 +8,7 @@
 
     <!-- Header TextView -->
     <TextView
-        android:id="@+id/header"
+        android:id="@+id/headerNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
@@ -25,35 +25,19 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/baseline_arrow_back_ios_new_24" />
+        android:src="@drawable/baseline_arrow_back_ios_new_24"
+        android:onClick="VolverContactosAmensaje"/>
 
 
 
-    <ImageView
-        android:id="@+id/Buscar_icon_contactos"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="50dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/baseline_search_24" />
 
-    <!-- Settings Icon -->
-    <ImageView
-        android:id="@+id/configuracion_icon_contactos"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/baseline_more_vert_24" />
 
     <!-- Messages Button -->
     <TextView
         android:id="@+id/messages_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_below="@id/header"
+        android:layout_below="@id/headerNombre"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:paddingTop="10dp"

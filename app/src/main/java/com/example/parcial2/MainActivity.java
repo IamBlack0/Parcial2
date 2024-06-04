@@ -1,74 +1,70 @@
 package com.example.parcial2;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
-    }
-    public void ConfiguracionUsuario(View view) {
-        // Crear el AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Configuración de Usuario");
-
-        // Opciones del AlertDialog
-        String[] opciones = {"Editar Perfil", "Agregar Contactos", "Cambiar Usuario"};
-        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+        ImageView configIcon = findViewById(R.id.config_icon);
+        configIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        // Acción para Editar Perfil
-                        Toast.makeText(MainActivity.this, "Editar Perfil seleccionado", Toast.LENGTH_SHORT).show();
-                        editarPerfil();
-                        break;
-                    case 1:
-                        // Acción para Agregar Contactos
-                        Toast.makeText(MainActivity.this, "Agregar Contactos seleccionado", Toast.LENGTH_SHORT).show();
-                        agregarContactos();
-                        break;
-                    case 2:
-                        // Acción para Cambiar Usuario
-                        Toast.makeText(MainActivity.this, "Cambiar Usuario seleccionado", Toast.LENGTH_SHORT).show();
-                        cambiarUsuario();
-                        break;
+            public void onClick(View v) {
+                showPopupMenu(v);
+            }
+        });
+    }
+
+    private void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_contextual, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.EditarPerfil) {
+                    editarPerfil();
+                    return true;
+                } else if (id == R.id.agregarContactos) {
+                    agregarContactos();
+                    return true;
+                } else if (id == R.id.CambiarUsuario) {
+                    cambiarUsuario();
+                    return true;
+                } else {
+                    return false;
                 }
             }
         });
-
-        // Mostrar el AlertDialog
-        builder.show();
+        popupMenu.show();
     }
 
-    private void editarPerfil() {
+    public void editarPerfil() {
         Intent i = new Intent(this, EditarPerfil.class);
         startActivity(i);
-        // Implementa la lógica para editar el perfil
     }
 
-    private void agregarContactos() {
-        // Implementa la lógica para agregar contactos
+    public void agregarContactos() {
+        Toast.makeText(this, "Agregar Contactos", Toast.LENGTH_SHORT).show();
     }
 
-    private void cambiarUsuario() {
-        // Implementa la lógica para cambiar de usuario
+    public void cambiarUsuario() {
+        Toast.makeText(this, "Cambiar Usuario", Toast.LENGTH_SHORT).show();
     }
 
+    public void BuscarContactos(View view) {
+        Intent i = new Intent(this, Contactos.class);
+        startActivity(i);
+    }
 }
-

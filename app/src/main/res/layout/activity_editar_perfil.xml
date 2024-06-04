@@ -21,7 +21,7 @@
 
     <!-- Header TextView -->
     <TextView
-        android:id="@+id/header"
+        android:id="@+id/headerNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -35,7 +35,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/header"
+        android:layout_below="@id/headerNombre"
         android:layout_marginTop="8dp"
         android:background="#424F63" />
 
