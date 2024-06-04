@@ -51,16 +51,14 @@ public class Contactos extends AppCompatActivity {
 
     private List<Usuario> ObtenerContactos() {
         List<Usuario> usuarios = new ArrayList<>();
-
-        usuarios.add(new Usuario("JOSE", "RIVERA"));
-        usuarios.add(new Usuario("micaelo", "RIVERA"));
-        usuarios.add(new Usuario("GUSTAVO", "RIVERA"));
-        usuarios.add(new Usuario("ROSA", "RIVERA"));
-        usuarios.add(new Usuario("ANA", "RIVERA"));
-
-
+        usuarios.add(new Usuario("JOSE", "RIVERA", R.drawable.elpatron));
+        usuarios.add(new Usuario("MICAELA", "RIVERA", R.drawable.yo_xx));
+        usuarios.add(new Usuario("GUSTAVO", "RIVERA", R.drawable.elpatron));
+        usuarios.add(new Usuario("ROSA", "RIVERA", R.drawable.yo_xx));
+        usuarios.add(new Usuario("ANA", "RIVERA", R.drawable.elpatron));
         return usuarios;
     }
+
 
 
 
