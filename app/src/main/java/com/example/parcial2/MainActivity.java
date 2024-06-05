@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Intenta obtener el ID del usuario desde el Intent; si no existe, usa un valor predeterminado
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
-        if (usuarioId != -1) {
+        if (usuarioId!= -1) {
             cargarUsuarioPorId(usuarioId);
         } else {
             cargarUsuarioActual();  // Carga el primer usuario por defecto si no se proporciona un ID
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
 
     }
 
