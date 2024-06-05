@@ -55,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+
+        // Intenta obtener el ID del usuario desde el Intent; si no existe, usa un valor predeterminado
+        int usuarioId = getIntent().getIntExtra("usuarioId", -1);
+        if (usuarioId != -1) {
+            cargarUsuarioPorId(usuarioId);
+        } else {
+            cargarUsuarioActual();  // Carga el primer usuario por defecto si no se proporciona un ID
+        }
+
         // Código para crear el archivo usuario.txt con dos usuarios iniciales
         // Descomenta este bloque para crear el archivo con los usuarios iniciales
 
@@ -69,9 +78,6 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
 //        }
 
-
-        // Cargar el usuario actual desde el archivo
-        cargarUsuarioActual();
     }
 
     private void showPopupMenu(View view) {
@@ -175,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
-                while ((line = br.readLine()) != null) {
+                while ((line = br.readLine())!= null) {
                     String[] parts = line.split("\\|");
                     if (parts.length >= 4) {
                         int id = Integer.parseInt(parts[0]);
@@ -200,14 +206,14 @@ public class MainActivity extends AppCompatActivity {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
-                while ((line = br.readLine()) != null) {
+                while ((line = br.readLine())!= null) {
                     String[] parts = line.split("\\|");
                     if (parts.length >= 4) {
                         int id = Integer.parseInt(parts[0]);
-                        String nombre = parts[1];
-                        String apellido = parts[2];
-                        String telefono = parts[3];
                         if (id == usuarioId) {
+                            String nombre = parts[1];
+                            String apellido = parts[2];
+                            String telefono = parts[3];
                             currentUser = new Usuario(id, nombre, apellido, telefono);
                             actualizarUsuarioActual();
                             break;
