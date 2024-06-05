@@ -1,5 +1,7 @@
 package com.example.parcial2.Entidades;
 
+import android.os.Bundle;
+
 public class Usuario {
     // Atributos
     private int id;
@@ -11,6 +13,13 @@ public class Usuario {
         this.nombre = nombre;
         this.apellido = apellido;
         this.imagenId = imagenId;
+    }
+
+    public Usuario(int id, String nombre, String apellido, String telefono) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.telefono = telefono;
     }
 
     // Getters y setters
@@ -52,5 +61,23 @@ public class Usuario {
 
     public void setImagenId(int imagenId) {
         this.imagenId = imagenId;
+    }
+
+    public Bundle toBundle(){
+        Bundle b = new Bundle();
+        b.putInt("id", getImagenId());
+        b.putString("nombre", getNombre());
+        b.putString("apellido", getApellido());
+        b.putString("telefono", getTelefono());
+        return b;
+    }
+
+    public static Usuario toclass(Bundle b){
+        return new Usuario(
+                b.getInt("id"),
+                b.getString("nombre"),
+                b.getString("apellido"),
+                b.getString("telefono")
+        );
     }
 }

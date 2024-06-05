@@ -16,7 +16,7 @@ public class Chat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        ImageView profileImage = findViewById(R.id.profile_image);
+        ImageView profileImage = findViewById(R.id.ImagenPerfil);
         TextView nombreTextView = findViewById(R.id.nombreEnChat);
         TextView apellidoTextView = findViewById(R.id.apellidoEnChat);
 

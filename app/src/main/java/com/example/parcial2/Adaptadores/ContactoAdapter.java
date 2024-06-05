@@ -34,7 +34,7 @@ public class ContactoAdapter extends ArrayAdapter<Usuario> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.listview_contactos, parent, false);
         }
 
-        ImageView imageView = convertView.findViewById(R.id.profile_image);
+        ImageView imageView = convertView.findViewById(R.id.ImagenPerfil);
         TextView nombreTextView = convertView.findViewById(R.id.nombreEnChat);
         TextView apellidoTextView = convertView.findViewById(R.id.apellidoEnChat);
 
