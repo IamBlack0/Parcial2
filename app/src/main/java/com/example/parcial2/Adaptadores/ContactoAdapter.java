@@ -20,10 +20,12 @@ import java.util.List;
 public class ContactoAdapter extends ArrayAdapter<Usuario> {
 
     List<Usuario> opciones;
+    int currentUserID;  // ID del usuario actual
 
-    public ContactoAdapter(Context context, List<Usuario> datos) {
+    public ContactoAdapter(Context context, List<Usuario> datos, int currentUserID) {
         super(context, R.layout.listview_contactos, datos);
         this.opciones = datos;
+        this.currentUserID = currentUserID;  // Guardar el ID del usuario actual
     }
 
     @NonNull
@@ -47,6 +49,7 @@ public class ContactoAdapter extends ArrayAdapter<Usuario> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), Chat.class);
+                intent.putExtra("usuarioId", currentUserID);  // Usar el ID del usuario actual
                 intent.putExtra("nombre", usuario.getNombre());
                 intent.putExtra("apellido", usuario.getApellido());
                 intent.putExtra("imagenId", usuario.getImagenId());

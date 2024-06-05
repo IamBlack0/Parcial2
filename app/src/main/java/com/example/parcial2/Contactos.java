@@ -47,17 +47,8 @@ public class Contactos extends AppCompatActivity {
 
     private void LlenarListViews() {
         List<Usuario> usuarios = this.ObtenerContactos();
-        ContactoAdapter contactoAdapter = new ContactoAdapter(ContactosList.getContext(), usuarios);
+        ContactoAdapter contactoAdapter = new ContactoAdapter(ContactosList.getContext(), usuarios, currentUser.getId());
         ContactosList.setAdapter(contactoAdapter);
-
-        // Configurar el OnItemClickListener
-        ContactosList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Usuario usuarioSeleccionado = (Usuario) parent.getItemAtPosition(position);
-                iniciarChatConUsuario(usuarioSeleccionado);
-            }
-        });
     }
 
     private List<Usuario> ObtenerContactos() {
@@ -93,38 +84,46 @@ public class Contactos extends AppCompatActivity {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
+                boolean found = false;  // Flag para verificar si se encontró el usuario
                 while ((line = br.readLine()) != null) {
                     String[] parts = line.split("\\|");
                     if (parts.length >= 4) {
                         int id = Integer.parseInt(parts[0]);
-                        String nombre = parts[1];
-                        String apellido = parts[2];
-                        String telefono = parts[3];
                         if (id == usuarioId) {
+                            String nombre = parts[1];
+                            String apellido = parts[2];
+                            String telefono = parts[3];
                             currentUser = new Usuario(id, nombre, apellido, telefono);
+                            found = true;  // Marcar que se encontró el usuario
                             break;
                         }
                     }
                 }
                 br.close();
+                if (!found) {
+                    Toast.makeText(this, "Usuario no encontrado.", Toast.LENGTH_SHORT).show();
+                    currentUser = null;  // Asegurar que currentUser es null si no se encontró el usuario
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(this, "Error al cargar el usuario: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                currentUser = null;  // Asegurar que currentUser es null en caso de error
             }
+        } else {
+            Toast.makeText(this, "Archivo de usuarios no existe.", Toast.LENGTH_SHORT).show();
+            currentUser = null;  // Asegurar que currentUser es null si no existe el archivo
         }
     }
 
-    public void iniciarChatConUsuario(Usuario usuario) {
-        Intent intent = new Intent(this, Chat.class);
-        intent.putExtra("usuarioId", currentUser.getId()); // Pasar el ID del usuario actual
-        intent.putExtra("nombre", usuario.getNombre());
-        intent.putExtra("apellido", usuario.getApellido());
-        intent.putExtra("imagenId", R.drawable.baseline_person_24); // Ajusta esto según sea necesario
-        startActivity(intent);
-    }
 
     public void VolverContactosAmensaje(View view) {
+        if (currentUser == null) {
+            Toast.makeText(this, "No se pudo cargar el usuario actual.", Toast.LENGTH_SHORT).show();
+            return;  // Salir del método si currentUser es null
+        }
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("usuarioId", currentUser.getId());
         startActivity(intent);
     }
+
 }

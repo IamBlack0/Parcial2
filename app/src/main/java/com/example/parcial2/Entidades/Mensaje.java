@@ -3,8 +3,8 @@ package com.example.parcial2.Entidades;
 public class Mensaje {
     private String texto;
     private String hora;
-    private boolean esEnviado; // true si el mensaje fue enviado por el usuario, false si fue recibido
-    private int usuarioId; // ID del usuario que envió el mensaje
+    private boolean esEnviado;
+    private int usuarioId;  // ID del usuario que envía el mensaje
 
     public Mensaje(String texto, String hora, boolean esEnviado, int usuarioId) {
         this.texto = texto;

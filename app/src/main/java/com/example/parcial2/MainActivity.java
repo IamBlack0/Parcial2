@@ -57,18 +57,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Código para crear el archivo usuario.txt con dos usuarios iniciales
         // Descomenta este bloque para crear el archivo con los usuarios iniciales
-        /*
-        try {
-            FileOutputStream fos = openFileOutput("usuario.txt", MODE_PRIVATE);
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            osw.write("1|JOSE|RIVERA|+507 6498-5644\n");
-            osw.write("2|MICAELA|RIVERA|+507 6342-9482\n");
-            osw.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
+
+//        try {
+//            FileOutputStream fos = openFileOutput("usuario.txt", MODE_PRIVATE);
+//            OutputStreamWriter osw = new OutputStreamWriter(fos);
+//            osw.write("1|JOSE|RIVERA|+507 6498-5644\n");
+//            osw.write("2|MICAELA|RIVERA|+507 6342-9482\n");
+//            osw.close();
+//            fos.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
 
         // Cargar el usuario actual desde el archivo
         cargarUsuarioActual();
