@@ -1,7 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#E0EAF4"
     tools:context=".Chat">
 
@@ -64,15 +65,12 @@
             android:text="en linea"
             android:textSize="14sp"
             android:textColor="#888888" />
-
-
     </RelativeLayout>
 
     <!-- Date Divider -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/headerNombre"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
@@ -100,28 +98,21 @@
     </LinearLayout>
 
     <!-- Chat Messages -->
-    <ScrollView
-        android:id="@+id/chat_scroll_view"
+    <ListView
+        android:id="@+id/messages_list"
         android:layout_width="match_parent"
-        android:layout_height="574dp"
-        android:layout_above="@id/message_input_layout"
-        android:fillViewport="true">
-
-        <ListView
-            android:id="@+id/messages_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
-
-    </ScrollView>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:stackFromBottom="true"
+        android:transcriptMode="normal" />
 
     <!-- Message Input Layout -->
     <RelativeLayout
         android:id="@+id/message_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="#DFE9F3"
         android:padding="8dp">
 
@@ -146,4 +137,4 @@
             android:src="@drawable/baseline_send_24"
             android:onClick="EnviarMensaje"/>
     </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>

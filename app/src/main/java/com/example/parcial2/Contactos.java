@@ -3,7 +3,9 @@ package com.example.parcial2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +31,10 @@ public class Contactos extends AppCompatActivity {
 
         // Obtener el usuario actual desde el Intent
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
+        if (usuarioId == -1) {
+            Toast.makeText(this, "Error: ID de usuario no válido.", Toast.LENGTH_LONG).show();
+            return;
+        }
         cargarUsuarioActual(usuarioId);
 
         this.InicializarControles();
@@ -43,6 +49,15 @@ public class Contactos extends AppCompatActivity {
         List<Usuario> usuarios = this.ObtenerContactos();
         ContactoAdapter contactoAdapter = new ContactoAdapter(ContactosList.getContext(), usuarios);
         ContactosList.setAdapter(contactoAdapter);
+
+        // Configurar el OnItemClickListener
+        ContactosList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Usuario usuarioSeleccionado = (Usuario) parent.getItemAtPosition(position);
+                iniciarChatConUsuario(usuarioSeleccionado);
+            }
+        });
     }
 
     private List<Usuario> ObtenerContactos() {
@@ -96,6 +111,15 @@ public class Contactos extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void iniciarChatConUsuario(Usuario usuario) {
+        Intent intent = new Intent(this, Chat.class);
+        intent.putExtra("usuarioId", currentUser.getId()); // Pasar el ID del usuario actual
+        intent.putExtra("nombre", usuario.getNombre());
+        intent.putExtra("apellido", usuario.getApellido());
+        intent.putExtra("imagenId", R.drawable.baseline_person_24); // Ajusta esto según sea necesario
+        startActivity(intent);
     }
 
     public void VolverContactosAmensaje(View view) {
