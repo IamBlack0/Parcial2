@@ -126,4 +126,14 @@ public class Contactos extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private List<Usuario> obtenerContactos() {
+        List<Usuario> contactos = new ArrayList<>();
+        contactos.add(new Usuario(3, "Contacto1", "Apellido1", "+507 0000-0001"));
+        contactos.add(new Usuario(4, "Contacto2", "Apellido2", "+507 0000-0002"));
+        contactos.add(new Usuario(5, "Contacto3", "Apellido3", "+507 0000-0003"));
+        contactos.add(new Usuario(6, "Contacto4", "Apellido4", "+507 0000-0004"));
+        contactos.add(new Usuario(7, "Contacto5", "Apellido5", "+507 0000-0005"));
+        return contactos;
+    }
+
 }

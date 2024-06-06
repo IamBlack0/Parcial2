@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.parcial2.Adaptadores.ConversacionAdapter;
 import com.example.parcial2.Entidades.Usuario;
 
 import java.io.BufferedReader;
@@ -21,7 +23,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView nombreTextView;
     private TextView apellidoTextView;
     private List<Usuario> usuarios;
+    private ListView conversationsListView;
+    private ConversacionAdapter conversacionAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         nombreTextView = findViewById(R.id.headerNombre);
         apellidoTextView = findViewById(R.id.headerApellido);
+        conversationsListView = findViewById(R.id.conversations_list);
 
         ImageView configIcon = findViewById(R.id.config_icon);
         configIcon.setOnClickListener(new View.OnClickListener() {
@@ -48,37 +55,41 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             File file = new File(getFilesDir(), "historialChat.txt");
+            File file1 = new File(getFilesDir(), "historialChat1.txt");
+            File file2 = new File(getFilesDir(), "historialChat2.txt");
+            File file3 = new File(getFilesDir(), "historialChat3.txt");
+            File file4 = new File(getFilesDir(), "historialChat4.txt");
+
+
             if (!file.exists()) {
                 file.createNewFile();
             }
+            if (!file1.exists()) {
+                file1.createNewFile();
+            }
+            if (!file2.exists()) {
+                file2.createNewFile();
+            }
+            if (!file3.exists()) {
+                file3.createNewFile();
+            }
+            if (!file4.exists()) {
+                file4.createNewFile();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
-        // Intenta obtener el ID del usuario desde el Intent; si no existe, usa un valor predeterminado
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
-        if (usuarioId!= -1) {
+        if (usuarioId != -1) {
             cargarUsuarioPorId(usuarioId);
         } else {
-            cargarUsuarioActual();  // Carga el primer usuario por defecto si no se proporciona un ID
+            cargarUsuarioActual();
         }
 
-        // Código para crear el archivo usuario.txt con dos usuarios iniciales
-        // Descomenta este bloque para crear el archivo con los usuarios iniciales
-
-//        try {
-//            FileOutputStream fos = openFileOutput("usuario.txt", MODE_PRIVATE);
-//            OutputStreamWriter osw = new OutputStreamWriter(fos);
-//            osw.write("1|JOSE|RIVERA|+507 6498-5644\n");
-//            osw.write("2|MICAELA|RIVERA|+507 6342-9482\n");
-//            osw.close();
-//            fos.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
+        actualizarListaUsuarios();
+        cargarConversaciones();
     }
 
     private void showPopupMenu(View view) {
@@ -123,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                         currentUser = usuarios.get(which);
                         actualizarUsuarioActual();
                         guardarUsuarios();
+                        cargarConversaciones(); // Recargar las conversaciones después de cambiar el usuario
                     }
                 });
         builder.create().show();
@@ -182,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
-                while ((line = br.readLine())!= null) {
+                while ((line = br.readLine()) != null) {
                     String[] parts = line.split("\\|");
                     if (parts.length >= 4) {
                         int id = Integer.parseInt(parts[0]);
@@ -207,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
-                while ((line = br.readLine())!= null) {
+                while ((line = br.readLine()) != null) {
                     String[] parts = line.split("\\|");
                     if (parts.length >= 4) {
                         int id = Integer.parseInt(parts[0]);
@@ -228,6 +240,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void cargarConversaciones() {
+        Map<Integer, String> ultimosMensajesMap = new HashMap<>();
+        File file = new File(getFilesDir(), "historialChat.txt");
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split("\\|");
+                    if (parts.length == 2) {
+                        int id = Integer.parseInt(parts[0]);
+                        String mensaje = parts[1];
+                        if (id != currentUser.getId()) {
+                            ultimosMensajesMap.put(id, mensaje);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<Usuario> usuariosConMensajes = new ArrayList<>();
+        List<String> ultimosMensajes = new ArrayList<>();
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId() != currentUser.getId() && ultimosMensajesMap.containsKey(usuario.getId())) {
+                usuariosConMensajes.add(usuario);
+                ultimosMensajes.add(ultimosMensajesMap.get(usuario.getId()));
+            }
+        }
+
+        conversacionAdapter = new ConversacionAdapter(this, usuariosConMensajes, ultimosMensajes, currentUser.getId());
+        conversationsListView.setAdapter(conversacionAdapter);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -239,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
                 cargarUsuarioActual();
             }
             actualizarListaUsuarios();
+            cargarConversaciones();
         }
     }
 

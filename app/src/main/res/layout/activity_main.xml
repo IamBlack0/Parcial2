@@ -53,9 +53,9 @@
         android:text="CHAT"
         android:textColor="#FFFFFF" />
 
-    <!-- List of Messages -->
+    <!-- List of Conversations -->
     <ListView
-        android:id="@+id/messages_list"
+        android:id="@+id/conversations_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/messages_button"
@@ -76,5 +76,4 @@
         android:scaleType="centerInside"
         android:onClick="BuscarContactos"
         android:padding="10dp"/>
-
 </RelativeLayout>
