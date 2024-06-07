@@ -1,6 +1,7 @@
 package com.example.parcial2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -11,12 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.parcial2.Entidades.Usuario;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +32,7 @@ public class EditarPerfil extends AppCompatActivity {
         apellidoEditText = findViewById(R.id.apellidoEditar);
         telefonoTextView = findViewById(R.id.telefonoEditar);
 
-        // Obtener el ID del usuario desde el Intent
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
-
-        // Cargar el usuario actual desde el archivo
         cargarUsuarioActual(usuarioId);
     }
 
@@ -78,71 +70,53 @@ public class EditarPerfil extends AppCompatActivity {
         usuarios.add(currentUser);
     }
 
+    private void guardarUsuarios() {
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        StringBuilder data = new StringBuilder();
+        for (Usuario usuario : usuarios) {
+            data.append(usuario.getId()).append("|")
+                    .append(usuario.getNombre()).append("|")
+                    .append(usuario.getApellido()).append("|")
+                    .append(usuario.getTelefono()).append(";");
+        }
+        editor.putString("usuarios", data.toString());
+        editor.apply();
+    }
+
     private List<Usuario> obtenerUsuarios() {
         List<Usuario> usuarios = new ArrayList<>();
-        File file = new File(getFilesDir(), "usuario.txt");
-        if (file.exists()) {
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    if (parts.length >= 4) {
-                        int id = Integer.parseInt(parts[0]);
-                        String nombre = parts[1];
-                        String apellido = parts[2];
-                        String telefono = parts[3];
-                        usuarios.add(new Usuario(id, nombre, apellido, telefono));
-                    }
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        String usuariosData = prefs.getString("usuarios", "");
+        if (!usuariosData.isEmpty()) {
+            for (String userData : usuariosData.split(";")) {
+                String[] parts = userData.split("\\|");
+                if (parts.length == 4) {
+                    int id = Integer.parseInt(parts[0]);
+                    String nombre = parts[1];
+                    String apellido = parts[2];
+                    String telefono = parts[3];
+                    usuarios.add(new Usuario(id, nombre, apellido, telefono));
                 }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return usuarios;
     }
 
-    private void guardarUsuarios() {
-        try {
-            FileOutputStream fos = openFileOutput("usuario.txt", MODE_PRIVATE); // Sobrescribir el archivo
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            for (Usuario usuario : usuarios) {
-                osw.write(usuario.getId() + "|" + usuario.getNombre() + "|" + usuario.getApellido() + "|" + usuario.getTelefono() + "\n");
+    private void cargarUsuarioActual(int usuarioId) {
+        List<Usuario> usuarios = obtenerUsuarios();
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId() == usuarioId) {
+                currentUser = usuario;
+                nombreEditText.setText(currentUser.getNombre());
+                apellidoEditText.setText(currentUser.getApellido());
+                telefonoTextView.setText(currentUser.getTelefono());
+                break;
             }
-            osw.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    }
+    public void cambiarImagen(View view) {
+        // Iniciar una actividad para seleccionar una imagen de la galería o capturar una foto
     }
 
-    private void cargarUsuarioActual(int usuarioId) {
-        File file = new File(getFilesDir(), "usuario.txt");
-        if (file.exists()) {
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    if (parts.length >= 4) {
-                        int id = Integer.parseInt(parts[0]);
-                        String nombre = parts[1];
-                        String apellido = parts[2];
-                        String telefono = parts[3];
-                        if (id == usuarioId) {
-                            currentUser = new Usuario(id, nombre, apellido, telefono);
-                            nombreEditText.setText(nombre);
-                            apellidoEditText.setText(apellido);
-                            telefonoTextView.setText(telefono);
-                            break;
-                        }
-                    }
-                }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

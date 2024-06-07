@@ -12,25 +12,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.parcial2.Chat;
-import com.example.parcial2.Entidades.Usuario;
+import com.example.parcial2.Entidades.Contacto;
 import com.example.parcial2.R;
 
 import java.util.List;
 
-public class ContactoAdapter extends ArrayAdapter<Usuario> {
+public class ContactoAdapter extends ArrayAdapter<Contacto> {
 
-    List<Usuario> opciones;
-    int currentUserID;  // ID del usuario actual
+    List<Contacto> contactos;
 
-    public ContactoAdapter(Context context, List<Usuario> datos, int currentUserID) {
+    public ContactoAdapter(Context context, List<Contacto> datos) {
         super(context, R.layout.listview_contactos, datos);
-        this.opciones = datos;
-        this.currentUserID = currentUserID;  // Guardar el ID del usuario actual
+        this.contactos = datos;
     }
 
     @NonNull
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        Usuario usuario = getItem(position);
+        Contacto contacto = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.listview_contactos, parent, false);
@@ -40,19 +38,18 @@ public class ContactoAdapter extends ArrayAdapter<Usuario> {
         TextView nombreTextView = convertView.findViewById(R.id.nombreEnChat);
         TextView apellidoTextView = convertView.findViewById(R.id.apellidoEnChat);
 
-        imageView.setImageResource(usuario.getImagenId());
-        nombreTextView.setText(usuario.getNombre());
-        apellidoTextView.setText(usuario.getApellido());
+        imageView.setImageResource(contacto.getImagenId());
+        nombreTextView.setText(contacto.getNombre());
+        apellidoTextView.setText(contacto.getApellido());
 
         // Agregar OnClickListener para manejar el clic en cada item
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), Chat.class);
-                intent.putExtra("usuarioId", currentUserID);  // Usar el ID del usuario actual
-                intent.putExtra("nombre", usuario.getNombre());
-                intent.putExtra("apellido", usuario.getApellido());
-                intent.putExtra("imagenId", usuario.getImagenId());
+                intent.putExtra("nombre", contacto.getNombre());
+                intent.putExtra("apellido", contacto.getApellido());
+                intent.putExtra("imagenId", contacto.getImagenId());
                 getContext().startActivity(intent);
             }
         });

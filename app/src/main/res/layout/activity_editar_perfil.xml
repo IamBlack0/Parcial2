@@ -63,6 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_alignEnd="@id/ImagenPerfil"
             android:layout_alignBottom="@id/ImagenPerfil"
+            android:onClick="cambiarImagen"
             android:layout_marginEnd="-14dp"
             android:layout_marginBottom="-9dp"
             android:src="@drawable/baseline_camera_alt_24"

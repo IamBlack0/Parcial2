@@ -5,4 +5,9 @@
     <item
         android:id="@+id/CambiarUsuario"
         android:title="Cambiar Usuario" />
+    <item
+        android:id="@+id/AgregarContacto"
+        android:title="Agregar Contacto" />
+
+
 </menu>

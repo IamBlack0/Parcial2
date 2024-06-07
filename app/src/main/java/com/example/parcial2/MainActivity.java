@@ -2,39 +2,27 @@ package com.example.parcial2;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.parcial2.Adaptadores.ConversacionAdapter;
 import com.example.parcial2.Entidades.Usuario;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private Usuario currentUser;
     private TextView nombreTextView;
     private TextView apellidoTextView;
-    private List<Usuario> usuarios;
-    private ListView conversationsListView;
-    private ConversacionAdapter conversacionAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
 
         nombreTextView = findViewById(R.id.headerNombre);
         apellidoTextView = findViewById(R.id.headerApellido);
-        conversationsListView = findViewById(R.id.conversations_list);
 
         ImageView configIcon = findViewById(R.id.config_icon);
         configIcon.setOnClickListener(new View.OnClickListener() {
@@ -53,44 +40,58 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        try {
-            File file = new File(getFilesDir(), "historialChat.txt");
-            File file1 = new File(getFilesDir(), "historialChat1.txt");
-            File file2 = new File(getFilesDir(), "historialChat2.txt");
-            File file3 = new File(getFilesDir(), "historialChat3.txt");
-            File file4 = new File(getFilesDir(), "historialChat4.txt");
-
-
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            if (!file1.exists()) {
-                file1.createNewFile();
-            }
-            if (!file2.exists()) {
-                file2.createNewFile();
-            }
-            if (!file3.exists()) {
-                file3.createNewFile();
-            }
-            if (!file4.exists()) {
-                file4.createNewFile();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (esPrimeraEjecucion()) {
+            inicializarUsuarios();
         }
 
-        int usuarioId = getIntent().getIntExtra("usuarioId", -1);
-        if (usuarioId != -1) {
-            cargarUsuarioPorId(usuarioId);
-        } else {
-            cargarUsuarioActual();
-        }
-
-        actualizarListaUsuarios();
-        cargarConversaciones();
+        cargarUsuarioActual();
     }
+
+    private boolean esPrimeraEjecucion() {
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        return prefs.getBoolean("esPrimeraEjecucion", true);
+    }
+
+    private void inicializarUsuarios() {
+        List<Usuario> usuarios = new ArrayList<>();
+        usuarios.add(new Usuario(1, "Usuario1", "Apellido1", "+507 0000-0001"));
+        usuarios.add(new Usuario(2, "Usuario2", "Apellido2", "+507 0000-0002"));
+        guardarUsuarios(usuarios);
+
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("esPrimeraEjecucion", false);
+        editor.apply();
+    }
+
+    private void guardarUsuarios(List<Usuario> usuarios) {
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        StringBuilder data = new StringBuilder();
+        for (Usuario usuario : usuarios) {
+            data.append(usuario.getId()).append("|")
+                    .append(usuario.getNombre()).append("|")
+                    .append(usuario.getApellido()).append("|")
+                    .append(usuario.getTelefono()).append(";");
+        }
+        editor.putString("usuarios", data.toString());
+        editor.apply();
+    }
+
+    private void cargarUsuarioActual() {
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        int currentUserId = prefs.getInt("currentUserId", -1); // Asegúrate de que este valor se actualice correctamente
+        List<Usuario> usuarios = obtenerUsuarios();
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId() == currentUserId) {
+                currentUser = usuario;
+                nombreTextView.setText(currentUser.getNombre());
+                apellidoTextView.setText(currentUser.getApellido());
+                break;
+            }
+        }
+    }
+
 
     private void showPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
@@ -105,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.CambiarUsuario) {
                     cambiarUsuario();
                     return true;
+                }    else if (id == R.id.AgregarContacto) {
+                        agregarContacto();
+                        return true;
+
                 } else {
                     return false;
                 }
@@ -113,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
+    private void agregarContacto() {
+    }
+
+
     public void editarPerfil() {
         Intent i = new Intent(this, EditarPerfil.class);
         i.putExtra("usuarioId", currentUser.getId());
@@ -120,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void cambiarUsuario() {
-        actualizarListaUsuarios();
+        final List<Usuario> usuarios = obtenerUsuarios(); // Cargar la lista de usuarios desde SharedPreferences
         String[] nombresUsuarios = new String[usuarios.size()];
         for (int i = 0; i < usuarios.size(); i++) {
             nombresUsuarios[i] = usuarios.get(i).getNombre() + " " + usuarios.get(i).getApellido();
@@ -132,163 +141,64 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         currentUser = usuarios.get(which);
-                        actualizarUsuarioActual();
-                        guardarUsuarios();
-                        cargarConversaciones(); // Recargar las conversaciones después de cambiar el usuario
+                        actualizarUsuarioActual(); // Asegúrate de llamar a este método
+                        guardarUsuarioActual(); // Guardar el usuario actual en SharedPreferences
                     }
                 });
         builder.create().show();
     }
-
-    private void actualizarListaUsuarios() {
-        usuarios = obtenerUsuarios();
+    private void actualizarUsuarioActual() {
+        if (currentUser != null) {
+            nombreTextView.setText(currentUser.getNombre());
+            apellidoTextView.setText(currentUser.getApellido());
+            // Guardar el ID del usuario actual en SharedPreferences
+            SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("currentUserId", currentUser.getId());
+            editor.apply();
+        }
     }
 
+
+
+
     private List<Usuario> obtenerUsuarios() {
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        String usuariosData = prefs.getString("usuarios", "");
         List<Usuario> usuarios = new ArrayList<>();
-        File file = new File(getFilesDir(), "usuario.txt");
-        if (file.exists()) {
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    if (parts.length >= 4) {
-                        int id = Integer.parseInt(parts[0]);
-                        String nombre = parts[1];
-                        String apellido = parts[2];
-                        String telefono = parts[3];
-                        usuarios.add(new Usuario(id, nombre, apellido, telefono));
-                    }
+        if (!usuariosData.isEmpty()) {
+            for (String userData : usuariosData.split(";")) {
+                String[] parts = userData.split("\\|");
+                if (parts.length == 4) {
+                    int id = Integer.parseInt(parts[0]);
+                    String nombre = parts[1];
+                    String apellido = parts[2];
+                    String telefono = parts[3];
+                    usuarios.add(new Usuario(id, nombre, apellido, telefono));
                 }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return usuarios;
     }
 
-    private void actualizarUsuarioActual() {
-        nombreTextView.setText(currentUser.getNombre());
-        apellidoTextView.setText(currentUser.getApellido());
+    private void guardarUsuarioActual() {
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("currentUserId", currentUser.getId());
+        editor.apply();
     }
 
-    private void guardarUsuarios() {
-        try {
-            FileOutputStream fos = openFileOutput("usuario.txt", MODE_PRIVATE); // Sobrescribir el archivo
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            for (Usuario usuario : usuarios) {
-                osw.write(usuario.getId() + "|" + usuario.getNombre() + "|" + usuario.getApellido() + "|" + usuario.getTelefono() + "\n");
-            }
-            osw.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void cargarUsuarioActual() {
-        File file = new File(getFilesDir(), "usuario.txt");
-        if (file.exists()) {
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    if (parts.length >= 4) {
-                        int id = Integer.parseInt(parts[0]);
-                        String nombre = parts[1];
-                        String apellido = parts[2];
-                        String telefono = parts[3];
-                        currentUser = new Usuario(id, nombre, apellido, telefono);
-                        actualizarUsuarioActual();
-                        break; // Salir del bucle después de cargar el primer usuario
-                    }
-                }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void cargarUsuarioPorId(int usuarioId) {
-        File file = new File(getFilesDir(), "usuario.txt");
-        if (file.exists()) {
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    if (parts.length >= 4) {
-                        int id = Integer.parseInt(parts[0]);
-                        if (id == usuarioId) {
-                            String nombre = parts[1];
-                            String apellido = parts[2];
-                            String telefono = parts[3];
-                            currentUser = new Usuario(id, nombre, apellido, telefono);
-                            actualizarUsuarioActual();
-                            break;
-                        }
-                    }
-                }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void cargarConversaciones() {
-        Map<Integer, String> ultimosMensajesMap = new HashMap<>();
-        File file = new File(getFilesDir(), "historialChat.txt");
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    if (parts.length == 2) {
-                        int id = Integer.parseInt(parts[0]);
-                        String mensaje = parts[1];
-                        if (id != currentUser.getId()) {
-                            ultimosMensajesMap.put(id, mensaje);
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        List<Usuario> usuariosConMensajes = new ArrayList<>();
-        List<String> ultimosMensajes = new ArrayList<>();
-        for (Usuario usuario : usuarios) {
-            if (usuario.getId() != currentUser.getId() && ultimosMensajesMap.containsKey(usuario.getId())) {
-                usuariosConMensajes.add(usuario);
-                ultimosMensajes.add(ultimosMensajesMap.get(usuario.getId()));
-            }
-        }
-
-        conversacionAdapter = new ConversacionAdapter(this, usuariosConMensajes, ultimosMensajes, currentUser.getId());
-        conversationsListView.setAdapter(conversacionAdapter);
-    }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            int usuarioId = data.getIntExtra("usuarioId", -1);
-            if (usuarioId != -1) {
-                cargarUsuarioPorId(usuarioId);
-            } else {
-                cargarUsuarioActual();
-            }
-            actualizarListaUsuarios();
-            cargarConversaciones();
+            cargarUsuarioActual(); // Recargar el usuario actual y actualizar la UI
         }
     }
+
 
     public void BuscarContactos(View view) {
         Intent i = new Intent(this, Contactos.class);
