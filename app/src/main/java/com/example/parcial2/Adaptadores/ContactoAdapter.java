@@ -61,4 +61,5 @@ public class ContactoAdapter extends ArrayAdapter<Contacto> {
 
         return convertView;
     }
+    //xd
 }
