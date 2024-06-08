@@ -47,7 +47,7 @@ public class MensajeAdapter extends BaseAdapter {
     @Override
     public int getItemViewType(int position) {
         Mensaje mensaje = mensajes.get(position);
-        return mensaje.getUsuarioId() == usuarioIdActual ? 0 : 1; // 0 para enviado, 1 para recibido
+        return mensaje.getUsuarioId() == usuarioIdActual? 0 : 1; // 0 para enviado, 1 para recibido
     }
 
     @Override

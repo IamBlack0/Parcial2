@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,6 +27,7 @@ public class Contactos extends AppCompatActivity {
         setContentView(R.layout.activity_contactos);
 
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
+        Toast.makeText(this, "Usuario ID: " + usuarioId, Toast.LENGTH_SHORT).show(); // Mostrar el ID del usuario
         cargarUsuarioActual(usuarioId);
 
         this.InicializarControles();
@@ -38,6 +40,11 @@ public class Contactos extends AppCompatActivity {
 
     private void LlenarListViews() {
         List<Contacto> contactos = this.ObtenerContactos();
+        if (contactos.isEmpty()) {
+            Toast.makeText(this, "No se encontraron contactos", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Contactos encontrados: " + contactos.size(), Toast.LENGTH_SHORT).show();
+        }
         ContactoAdapter contactoAdapter = new ContactoAdapter(ContactosList.getContext(), contactos);
         ContactosList.setAdapter(contactoAdapter);
     }
@@ -50,6 +57,7 @@ public class Contactos extends AppCompatActivity {
             // Aquí se inicializan los contactos por primera vez y se guardan
             contactos = inicializarContactos();
             guardarContactos(contactos);
+            Toast.makeText(this, "Contactos inicializados y guardados", Toast.LENGTH_SHORT).show();
         } else {
             for (String contactoData : contactosData.split(";")) {
                 String[] parts = contactoData.split("\\|");
@@ -62,10 +70,21 @@ public class Contactos extends AppCompatActivity {
                     contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
                 }
             }
+            Toast.makeText(this, "Contactos cargados desde SharedPreferences", Toast.LENGTH_SHORT).show();
         }
-        return contactos;
-    }
 
+        // Filtrar contactos según el usuario actual
+        List<Contacto> contactosFiltrados = new ArrayList<>();
+        for (Contacto contacto : contactos) {
+            if (currentUser.getId() == 1 && contacto.getId() != 1) {
+                contactosFiltrados.add(contacto);
+            } else if (currentUser.getId() == 2 && contacto.getId() != 2) {
+                contactosFiltrados.add(contacto);
+            }
+        }
+        Toast.makeText(this, "Contactos filtrados: " + contactosFiltrados.size(), Toast.LENGTH_SHORT).show();
+        return contactosFiltrados;
+    }
 
     private List<Contacto> inicializarContactos() {
         List<Contacto> contactos = new ArrayList<>();
@@ -79,7 +98,6 @@ public class Contactos extends AppCompatActivity {
         return contactos;
     }
 
-
     private void guardarContactos(List<Contacto> contactos) {
         SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -88,15 +106,36 @@ public class Contactos extends AppCompatActivity {
             data.append(contacto.getId()).append("|")
                     .append(contacto.getNombre()).append("|")
                     .append(contacto.getApellido()).append("|")
-                    .append(contacto.getTelefono()).append(";");
+                    .append(contacto.getTelefono()).append("|")
+                    .append(contacto.getImagenId()).append(";");  // Asegúrate de incluir el ID de imagen
         }
         editor.putString("contactos", data.toString());
         editor.apply();
     }
 
     private void cargarUsuarioActual(int usuarioId) {
-        // Este método debería cargar el usuario actual de SharedPreferences
-        // Similar a cómo se hace en MainActivity
+        SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
+        String usuariosData = prefs.getString("usuarios", "");
+        List<Usuario> usuarios = new ArrayList<>();
+        if (!usuariosData.isEmpty()) {
+            for (String userData : usuariosData.split(";")) {
+                String[] parts = userData.split("\\|");
+                if (parts.length == 4) {
+                    int id = Integer.parseInt(parts[0]);
+                    String nombre = parts[1];
+                    String apellido = parts[2];
+                    String telefono = parts[3];
+                    usuarios.add(new Usuario(id, nombre, apellido, telefono));
+                }
+            }
+        }
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId() == usuarioId) {
+                currentUser = usuario;
+                Toast.makeText(this, "Usuario cargado: " + currentUser.getNombre(), Toast.LENGTH_SHORT).show();
+                break;
+            }
+        }
     }
 
     public void VolverContactosAmensaje(View view) {

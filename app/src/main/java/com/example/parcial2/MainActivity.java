@@ -6,13 +6,17 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.parcial2.Entidades.Contacto;
 import com.example.parcial2.Entidades.Usuario;
 
 import java.util.ArrayList;
@@ -205,4 +209,58 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra("usuarioId", currentUser.getId());
         startActivity(i);
     }
+
+//    private void agregarContacto(int idUsuario, String nombre, String apellido, String telefono, int imagenId) {
+//        List<Contacto> contactos = obtenerContactos();
+//        contactos.add(new Contacto(idUsuario, nombre, apellido, telefono, imagenId));
+//        guardarContactos(contactos);
+//        Toast.makeText(this, "Contacto agregado exitosamente", Toast.LENGTH_SHORT).show();
+//    }
+//
+//    private void mostrarDialogoAgregarContacto() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Agregar Contacto");
+//
+//        LinearLayout layout = new LinearLayout(this);
+//        layout.setOrientation(LinearLayout.VERTICAL);
+//
+//        EditText nombreEditText = new EditText(this);
+//        EditText apellidoEditText = new EditText(this);
+//        EditText telefonoEditText = new EditText(this);
+//        EditText imagenIdEditText = new EditText(this);
+//
+//        nombreEditText.setHint("Nombre");
+//        apellidoEditText.setHint("Apellido");
+//        telefonoEditText.setHint("Teléfono");
+//        imagenIdEditText.setHint("ID de Imagen");
+//
+//        layout.addView(nombreEditText);
+//        layout.addView(apellidoEditText);
+//        layout.addView(telefonoEditText);
+//        layout.addView(imagenIdEditText);
+//
+//        builder.setView(layout)
+//                .setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        int idUsuario = currentUser.getId();
+//                        String nombre = nombreEditText.getText().toString();
+//                        String apellido = apellidoEditText.getText().toString();
+//                        String telefono = telefonoEditText.getText().toString();
+//                        int imagenId = Integer.parseInt(imagenIdEditText.getText().toString());
+//
+//                        agregarContacto(idUsuario, nombre, apellido, telefono, imagenId);
+//                    }
+//                })
+//                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+//    }
+
+
+
 }

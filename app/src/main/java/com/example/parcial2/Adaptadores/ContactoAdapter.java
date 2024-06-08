@@ -27,6 +27,7 @@ public class ContactoAdapter extends ArrayAdapter<Contacto> {
     }
 
     @NonNull
+    @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         Contacto contacto = getItem(position);
 
@@ -38,21 +39,23 @@ public class ContactoAdapter extends ArrayAdapter<Contacto> {
         TextView nombreTextView = convertView.findViewById(R.id.nombreEnChat);
         TextView apellidoTextView = convertView.findViewById(R.id.apellidoEnChat);
 
-        imageView.setImageResource(contacto.getImagenId());
-        nombreTextView.setText(contacto.getNombre());
-        apellidoTextView.setText(contacto.getApellido());
+        if (contacto != null) {
+            imageView.setImageResource(contacto.getImagenId());
+            nombreTextView.setText(contacto.getNombre());
+            apellidoTextView.setText(contacto.getApellido());
 
-        // Agregar OnClickListener para manejar el clic en cada item
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), Chat.class);
-                intent.putExtra("nombre", contacto.getNombre());
-                intent.putExtra("apellido", contacto.getApellido());
-                intent.putExtra("imagenId", contacto.getImagenId());
-                getContext().startActivity(intent);
-            }
-        });
+            // Agregar OnClickListener para manejar el clic en cada item
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), Chat.class);
+                    intent.putExtra("nombre", contacto.getNombre());
+                    intent.putExtra("apellido", contacto.getApellido());
+                    intent.putExtra("imagenId", contacto.getImagenId());
+                    getContext().startActivity(intent);
+                }
+            });
+        }
 
         return convertView;
     }
