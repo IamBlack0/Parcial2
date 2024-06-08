@@ -206,9 +206,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void BuscarContactos(View view) {
         Intent i = new Intent(this, Contactos.class);
-        i.putExtra("usuarioId", currentUser.getId());
+        i.putExtra("usuarioId", currentUser.getId()); // Ya estaba aquí, solo para referencia
+        i.putExtra("contactoId", currentUser.getId()); // Agrega el ID del contacto actual
         startActivity(i);
     }
+
 
 //    private void agregarContacto(int idUsuario, String nombre, String apellido, String telefono, int imagenId) {
 //        List<Contacto> contactos = obtenerContactos();

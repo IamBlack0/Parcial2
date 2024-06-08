@@ -52,9 +52,11 @@ public class ContactoAdapter extends ArrayAdapter<Contacto> {
                     intent.putExtra("nombre", contacto.getNombre());
                     intent.putExtra("apellido", contacto.getApellido());
                     intent.putExtra("imagenId", contacto.getImagenId());
+                    intent.putExtra("contactoId", contacto.getId()); // Agrega el ID del contacto
                     getContext().startActivity(intent);
                 }
             });
+
         }
 
         return convertView;

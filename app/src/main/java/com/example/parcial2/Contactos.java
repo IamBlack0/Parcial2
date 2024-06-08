@@ -27,11 +27,13 @@ public class Contactos extends AppCompatActivity {
         setContentView(R.layout.activity_contactos);
 
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
-        Toast.makeText(this, "Usuario ID: " + usuarioId, Toast.LENGTH_SHORT).show(); // Mostrar el ID del usuario
+        int contactoId = getIntent().getIntExtra("contactoId", -1); // Recibe el ID del contacto
+        Toast.makeText(this, "Usuario ID: " + usuarioId + ", Contacto ID: " + contactoId, Toast.LENGTH_SHORT).show(); // Muestra ambos IDs
         cargarUsuarioActual(usuarioId);
 
         this.InicializarControles();
     }
+
 
     private void InicializarControles() {
         ContactosList = findViewById(R.id.contactos_list);
