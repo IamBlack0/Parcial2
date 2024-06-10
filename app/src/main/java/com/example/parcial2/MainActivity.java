@@ -133,6 +133,12 @@ public class MainActivity extends AppCompatActivity {
                             long timestamp = System.currentTimeMillis(); // Usar el tiempo actual si no hay timestamp
 
                             String nombre = "Contacto " + i; // Simplemente usando el índice como parte del nombre para simplificar
+
+                            // Ajustar el último mensaje según quién lo envió
+                            if (remitenteId != usuarioId) {
+                                ultimoMensaje = "Tú: " + ultimoMensaje;
+                            }
+
                             conversaciones.add(new Conversacion(usuarioId, i, i, nombre, "", 0, ultimoMensaje, new Date(timestamp).toString()));
                             Toast.makeText(this, "Conversación cargada: " + nombre, Toast.LENGTH_SHORT).show();
                         }
@@ -150,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No hay conversaciones para cargar", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 
@@ -209,10 +216,12 @@ public class MainActivity extends AppCompatActivity {
                         currentUser = usuarios.get(which);
                         actualizarUsuarioActual(); // Asegúrate de llamar a este método
                         guardarUsuarioActual(); // Guardar el usuario actual en SharedPreferences
+                        cargarConversacionesRecientes(); // Volver a cargar las conversaciones para el nuevo usuario
                     }
                 });
         builder.create().show();
     }
+
 
     private void actualizarUsuarioActual() {
         if (currentUser!= null) {

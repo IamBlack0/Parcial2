@@ -64,6 +64,21 @@ public class ConversacionAdapter extends ArrayAdapter<Conversacion> {
                     intent.putExtra("usuarioId", conversacion.getUsuarioId());
                     intent.putExtra("contactoId", conversacion.getContactoId());
                     intent.putExtra("destinatarioContactoId", conversacion.getDestinatarioContactoId());
+
+                    // Ajustar la lógica para pasar los IDs correctos
+                    if (conversacion.getUsuarioId() == 1) {
+                        intent.putExtra("contactoId", 1); // Usuario 1 siempre envía como contacto 1
+                        intent.putExtra("destinatarioContactoId", conversacion.getContactoId()); // Pasar el ID del contacto destinatario
+                    } else {
+                        if (conversacion.getContactoId() == 1) {
+                            intent.putExtra("contactoId", 2); // Usuario 2 envía como contacto 2 al contacto 1
+                            intent.putExtra("destinatarioContactoId", 1); // Siempre envía al contacto 1
+                        } else {
+                            intent.putExtra("contactoId", conversacion.getContactoId()); // Usuario 2 envía como el contacto seleccionado
+                            intent.putExtra("destinatarioContactoId", 1); // Siempre envía al contacto 1
+                        }
+                    }
+
                     getContext().startActivity(intent);
                 }
             });

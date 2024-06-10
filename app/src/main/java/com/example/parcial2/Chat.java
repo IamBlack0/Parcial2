@@ -95,6 +95,8 @@ public class Chat extends AppCompatActivity {
                 }
             }
             mensajeAdapter.notifyDataSetChanged();
+        } else {
+            Toast.makeText(this, "No se encontraron mensajes para la clave: " + chatKey, Toast.LENGTH_LONG).show();
         }
     }
 
