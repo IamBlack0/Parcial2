@@ -61,7 +61,7 @@ public class Chat extends AppCompatActivity {
         mensajeAdapter = new MensajeAdapter(this, mensajes, usuarioId);
         listView.setAdapter(mensajeAdapter);
 
-        cargarMensajes(usuarioId, contactoId, destinatarioContactoId); // Cargar mensajes al iniciar la actividad
+        cargarMensajes(contactoId, destinatarioContactoId); // Cargar mensajes al iniciar la actividad
 
         enviarMensaje.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,14 +73,15 @@ public class Chat extends AppCompatActivity {
                     mensajeAdapter.notifyDataSetChanged();
                     inputMensaje.setText(""); // Limpiar el campo de texto
                     listView.setSelection(mensajes.size() - 1); // Scroll to the bottom
-                    guardarMensajeEnHistorial(texto, usuarioId, contactoId, destinatarioContactoId); // Guardar el mensaje en SharedPreferences
+                    guardarMensajeEnHistorial(texto, contactoId, destinatarioContactoId); // Guardar el mensaje en SharedPreferences
                 }
             }
         });
     }
 
-    private void cargarMensajes(int remitenteId, int remitenteContactoId, int destinatarioContactoId) {
-        SharedPreferences prefs = getSharedPreferences("Chat_" + remitenteId + "_" + remitenteContactoId + "_" + destinatarioContactoId, MODE_PRIVATE);
+    private void cargarMensajes(int contactoId, int destinatarioContactoId) {
+        String chatKey = getChatKey(contactoId, destinatarioContactoId);
+        SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
         String mensajesData = prefs.getString("mensajes", "");
         if (!mensajesData.isEmpty()) {
             String[] mensajesArray = mensajesData.split("\n");
@@ -89,7 +90,7 @@ public class Chat extends AppCompatActivity {
                 if (parts.length == 2) {
                     int id = Integer.parseInt(parts[0]);
                     String texto = parts[1];
-                    boolean esEnviado = id == remitenteId;
+                    boolean esEnviado = id == usuarioId;
                     mensajes.add(new Mensaje(texto, "Hora", esEnviado, id));
                 }
             }
@@ -97,11 +98,17 @@ public class Chat extends AppCompatActivity {
         }
     }
 
-    private void guardarMensajeEnHistorial(String mensaje, int remitenteId, int remitenteContactoId, int destinatarioContactoId) {
-        SharedPreferences prefs = getSharedPreferences("Chat_" + remitenteId + "_" + remitenteContactoId + "_" + destinatarioContactoId, MODE_PRIVATE);
+    private void guardarMensajeEnHistorial(String mensaje, int contactoId, int destinatarioContactoId) {
+        String chatKey = getChatKey(contactoId, destinatarioContactoId);
+        SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("mensajes", prefs.getString("mensajes", "") + remitenteId + "|" + mensaje + "\n");
+        editor.putString("mensajes", prefs.getString("mensajes", "") + usuarioId + "|" + mensaje + "\n");
         editor.apply();
+    }
+
+    private String getChatKey(int contactoId, int destinatarioContactoId) {
+        // Asegúrate de que la clave sea la misma sin importar el orden de los IDs
+        return "Chat_" + Math.min(contactoId, destinatarioContactoId) + "_" + Math.max(contactoId, destinatarioContactoId);
     }
 
     public void VolverChatAmensaje(View view) {

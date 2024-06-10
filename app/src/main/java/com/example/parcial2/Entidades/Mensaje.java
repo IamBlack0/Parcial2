@@ -4,7 +4,7 @@ public class Mensaje {
     private String texto;
     private String hora;
     private boolean esEnviado;
-    private int usuarioId;  // ID del usuario que envía el mensaje
+    private int usuarioId;
 
     public Mensaje(String texto, String hora, boolean esEnviado, int usuarioId) {
         this.texto = texto;
@@ -21,7 +21,7 @@ public class Mensaje {
         return hora;
     }
 
-    public boolean esEnviado() {
+    public boolean isEsEnviado() {
         return esEnviado;
     }
 
