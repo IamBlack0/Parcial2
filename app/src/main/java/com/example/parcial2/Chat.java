@@ -101,14 +101,15 @@ public class Chat extends AppCompatActivity {
     private void guardarMensajeEnHistorial(String mensaje, int contactoId, int destinatarioContactoId) {
         String chatKey = getChatKey(contactoId, destinatarioContactoId);
         SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
+        String existingMessages = prefs.getString("mensajes", "");
+        String newMessageRecord = usuarioId + "|" + mensaje + "\n"; // Asegúrate de que el formato aquí es correcto
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("mensajes", prefs.getString("mensajes", "") + usuarioId + "|" + mensaje + "\n");
+        editor.putString("mensajes", existingMessages + newMessageRecord);
         editor.apply();
     }
 
-    private String getChatKey(int contactoId, int destinatarioContactoId) {
-        // Asegúrate de que la clave sea la misma sin importar el orden de los IDs
-        return "Chat_" + Math.min(contactoId, destinatarioContactoId) + "_" + Math.max(contactoId, destinatarioContactoId);
+    private String getChatKey(int id1, int id2) {
+        return "Chat_" + Math.min(id1, id2) + "_" + Math.max(id1, id2);
     }
 
     public void VolverChatAmensaje(View view) {

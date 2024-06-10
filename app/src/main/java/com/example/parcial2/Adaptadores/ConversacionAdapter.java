@@ -12,53 +12,62 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.parcial2.Chat;
-import com.example.parcial2.Entidades.Usuario;
+import com.example.parcial2.Entidades.Conversacion;
 import com.example.parcial2.R;
 
 import java.util.List;
 
-public class ConversacionAdapter extends ArrayAdapter<Usuario> {
+public class ConversacionAdapter extends ArrayAdapter<Conversacion> {
 
-    private List<Usuario> usuarios;
-    private List<String> ultimosMensajes;
-    private int currentUserID;
+    public ConversacionAdapter(Context context, List<Conversacion> conversaciones) {
+        super(context, R.layout.listview_conversacion, conversaciones);
+    }
 
-    public ConversacionAdapter(Context context, List<Usuario> usuarios, List<String> ultimosMensajes, int currentUserID) {
-        super(context, R.layout.listview_conversacion, usuarios);
-        this.usuarios = usuarios;
-        this.ultimosMensajes = ultimosMensajes;
-        this.currentUserID = currentUserID;
+    static class ViewHolder {
+        ImageView imageView;
+        TextView nombreTextView;
+        TextView timestampTextView;
+        TextView messageTextView;
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        Usuario usuario = getItem(position);
-        String ultimoMensaje = ultimosMensajes.get(position);
-
+        ViewHolder holder;
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.listview_conversacion, parent, false);
+            holder = new ViewHolder();
+            holder.imageView = convertView.findViewById(R.id.ImagenPerfil);
+            holder.nombreTextView = convertView.findViewById(R.id.nombreEnChat);
+            holder.timestampTextView = convertView.findViewById(R.id.timestamp);
+            holder.messageTextView = convertView.findViewById(R.id.message);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        ImageView imageView = convertView.findViewById(R.id.ImagenPerfil);
-        TextView nombreTextView = convertView.findViewById(R.id.nombreEnChat);
-        TextView messageTextView = convertView.findViewById(R.id.message);
+        Conversacion conversacion = getItem(position);
+        if (conversacion != null) {
+            holder.imageView.setImageResource(conversacion.getImagenId());
+            holder.nombreTextView.setText(conversacion.getNombre());
+            holder.timestampTextView.setText(conversacion.getTimestamp());
+            holder.messageTextView.setText(conversacion.getUltimoMensaje());
 
-        imageView.setImageResource(usuario.getImagenId());
-        nombreTextView.setText(usuario.getNombre() + " " + usuario.getApellido());
-        messageTextView.setText(ultimoMensaje);
-
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), Chat.class);
-                intent.putExtra("usuarioId", currentUserID);
-                intent.putExtra("nombre", usuario.getNombre());
-                intent.putExtra("apellido", usuario.getApellido());
-                intent.putExtra("imagenId", usuario.getImagenId());
-                getContext().startActivity(intent);
-            }
-        });
+            // Agregar OnClickListener para manejar el clic en cada item
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), Chat.class);
+                    intent.putExtra("nombre", conversacion.getNombre());
+                    intent.putExtra("apellido", conversacion.getApellido());
+                    intent.putExtra("imagenId", conversacion.getImagenId());
+                    intent.putExtra("usuarioId", conversacion.getUsuarioId());
+                    intent.putExtra("contactoId", conversacion.getContactoId());
+                    intent.putExtra("destinatarioContactoId", conversacion.getDestinatarioContactoId());
+                    getContext().startActivity(intent);
+                }
+            });
+        }
 
         return convertView;
     }

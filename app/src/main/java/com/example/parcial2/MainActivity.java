@@ -4,11 +4,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,9 +16,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.parcial2.Entidades.Contacto;
+import com.example.parcial2.Adaptadores.ConversacionAdapter;
+import com.example.parcial2.Entidades.Conversacion;
 import com.example.parcial2.Entidades.Usuario;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private Usuario currentUser;
     private TextView nombreTextView;
     private TextView apellidoTextView;
+    private ListView conversationsListView;
+    private ConversacionAdapter conversacionAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         nombreTextView = findViewById(R.id.headerNombre);
         apellidoTextView = findViewById(R.id.headerApellido);
+        conversationsListView = findViewById(R.id.conversations_list);
 
         ImageView configIcon = findViewById(R.id.config_icon);
         configIcon.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +54,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         cargarUsuarioActual();
+        cargarConversacionesRecientes();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarConversacionesRecientes();  // Recargar conversaciones cada vez que la actividad se reanuda
+    }
+
 
     private boolean esPrimeraEjecucion() {
         SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
@@ -96,6 +109,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void cargarConversacionesRecientes() {
+        List<Conversacion> conversaciones = new ArrayList<>();
+        int usuarioId = currentUser.getId(); // Asumiendo que tienes un currentUser definido
+
+        Toast.makeText(this, "Cargando conversaciones para el usuario: " + usuarioId, Toast.LENGTH_SHORT).show();
+
+        for (int i = 1; i <= 6; i++) {
+            if (i != usuarioId) { // No cargar conversaciones consigo mismo
+                String chatKey = getChatKey(usuarioId, i);
+                SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
+                String mensajesData = prefs.getString("mensajes", "");
+                Log.d("Debug", "Buscando clave: " + chatKey + " | Datos encontrados: " + mensajesData);
+                Toast.makeText(this, "Buscando clave: " + chatKey + " | Datos encontrados: " + mensajesData, Toast.LENGTH_LONG).show();
+                if (!mensajesData.isEmpty()) {
+                    String[] mensajesArray = mensajesData.split("\n");
+                    if (mensajesArray.length > 0) {
+                        String lastMessageData = mensajesArray[mensajesArray.length - 1];
+                        String[] messageParts = lastMessageData.split("\\|");
+                        if (messageParts.length == 2) { // Ajustado a 2 partes según tu formato
+                            int remitenteId = Integer.parseInt(messageParts[0]);
+                            String ultimoMensaje = messageParts[1];
+                            long timestamp = System.currentTimeMillis(); // Usar el tiempo actual si no hay timestamp
+
+                            String nombre = "Contacto " + i; // Simplemente usando el índice como parte del nombre para simplificar
+                            conversaciones.add(new Conversacion(usuarioId, i, i, nombre, "", 0, ultimoMensaje, new Date(timestamp).toString()));
+                            Toast.makeText(this, "Conversación cargada: " + nombre, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "No se encontraron datos para " + chatKey, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        if (!conversaciones.isEmpty()) {
+            conversacionAdapter = new ConversacionAdapter(this, conversaciones);
+            conversationsListView.setAdapter(conversacionAdapter);
+        } else {
+            Toast.makeText(this, "No hay conversaciones para cargar", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+    private String getChatKey(int id1, int id2) {
+        return "Chat_" + Math.min(id1, id2) + "_" + Math.max(id1, id2);
+    }
+
+
+
 
     private void showPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
@@ -110,10 +173,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.CambiarUsuario) {
                     cambiarUsuario();
                     return true;
-                }    else if (id == R.id.AgregarContacto) {
-                        agregarContacto();
-                        return true;
-
+                } else if (id == R.id.AgregarContacto) {
+                    agregarContacto();
+                    return true;
                 } else {
                     return false;
                 }
@@ -123,8 +185,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void agregarContacto() {
+        // Implementa la lógica para agregar un contacto aquí
     }
-
 
     public void editarPerfil() {
         Intent i = new Intent(this, EditarPerfil.class);
@@ -151,8 +213,9 @@ public class MainActivity extends AppCompatActivity {
                 });
         builder.create().show();
     }
+
     private void actualizarUsuarioActual() {
-        if (currentUser != null) {
+        if (currentUser!= null) {
             nombreTextView.setText(currentUser.getNombre());
             apellidoTextView.setText(currentUser.getApellido());
             // Guardar el ID del usuario actual en SharedPreferences
@@ -162,9 +225,6 @@ public class MainActivity extends AppCompatActivity {
             editor.apply();
         }
     }
-
-
-
 
     private List<Usuario> obtenerUsuarios() {
         SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
@@ -192,9 +252,6 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -203,64 +260,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     public void BuscarContactos(View view) {
         Intent i = new Intent(this, Contactos.class);
         i.putExtra("usuarioId", currentUser.getId());
         startActivity(i);
     }
-
-//    private void agregarContacto(int idUsuario, String nombre, String apellido, String telefono, int imagenId) {
-//        List<Contacto> contactos = obtenerContactos();
-//        contactos.add(new Contacto(idUsuario, nombre, apellido, telefono, imagenId));
-//        guardarContactos(contactos);
-//        Toast.makeText(this, "Contacto agregado exitosamente", Toast.LENGTH_SHORT).show();
-//    }
-//
-//    private void mostrarDialogoAgregarContacto() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Agregar Contacto");
-//
-//        LinearLayout layout = new LinearLayout(this);
-//        layout.setOrientation(LinearLayout.VERTICAL);
-//
-//        EditText nombreEditText = new EditText(this);
-//        EditText apellidoEditText = new EditText(this);
-//        EditText telefonoEditText = new EditText(this);
-//        EditText imagenIdEditText = new EditText(this);
-//
-//        nombreEditText.setHint("Nombre");
-//        apellidoEditText.setHint("Apellido");
-//        telefonoEditText.setHint("Teléfono");
-//        imagenIdEditText.setHint("ID de Imagen");
-//
-//        layout.addView(nombreEditText);
-//        layout.addView(apellidoEditText);
-//        layout.addView(telefonoEditText);
-//        layout.addView(imagenIdEditText);
-//
-//        builder.setView(layout)
-//                .setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        int idUsuario = currentUser.getId();
-//                        String nombre = nombreEditText.getText().toString();
-//                        String apellido = apellidoEditText.getText().toString();
-//                        String telefono = telefonoEditText.getText().toString();
-//                        int imagenId = Integer.parseInt(imagenIdEditText.getText().toString());
-//
-//                        agregarContacto(idUsuario, nombre, apellido, telefono, imagenId);
-//                    }
-//                })
-//                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
-
-
-
 }
