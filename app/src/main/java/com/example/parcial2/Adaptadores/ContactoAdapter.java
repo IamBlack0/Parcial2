@@ -20,10 +20,12 @@ import java.util.List;
 public class ContactoAdapter extends ArrayAdapter<Contacto> {
 
     List<Contacto> contactos;
+    int usuarioId;
 
-    public ContactoAdapter(Context context, List<Contacto> datos) {
+    public ContactoAdapter(Context context, List<Contacto> datos, int usuarioId) {
         super(context, R.layout.listview_contactos, datos);
         this.contactos = datos;
+        this.usuarioId = usuarioId;
     }
 
     @NonNull
@@ -52,6 +54,20 @@ public class ContactoAdapter extends ArrayAdapter<Contacto> {
                     intent.putExtra("nombre", contacto.getNombre());
                     intent.putExtra("apellido", contacto.getApellido());
                     intent.putExtra("imagenId", contacto.getImagenId());
+                    intent.putExtra("usuarioId", usuarioId); // Pasar el ID del usuario actual
+
+                    if (usuarioId == 1) {
+                        intent.putExtra("contactoId", 1); // Usuario 1 siempre envía como contacto 1
+                        intent.putExtra("destinatarioContactoId", contacto.getId()); // Pasar el ID del contacto destinatario
+                    } else {
+                        if (contacto.getId() == 1) {
+                            intent.putExtra("contactoId", 2); // Usuario 2 envía como contacto 2 al contacto 1
+                            intent.putExtra("destinatarioContactoId", 1); // Siempre envía al contacto 1
+                        } else {
+                            intent.putExtra("contactoId", contacto.getId()); // Usuario 2 envía como el contacto seleccionado
+                            intent.putExtra("destinatarioContactoId", 1); // Siempre envía al contacto 1
+                        }
+                    }
                     getContext().startActivity(intent);
                 }
             });

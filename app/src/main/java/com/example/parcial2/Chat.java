@@ -54,7 +54,7 @@ public class Chat extends AppCompatActivity {
         nombreTextView.setText(nombre);
         apellidoTextView.setText(apellido);
 
-
+        // Mostrar Toast con los IDs de usuario y contacto
         Toast.makeText(this, "Usuario ID: " + usuarioId + ", Contacto ID: " + contactoId + ", Destinatario Contacto ID: " + destinatarioContactoId, Toast.LENGTH_LONG).show();
 
         mensajes = new ArrayList<>();
@@ -62,7 +62,6 @@ public class Chat extends AppCompatActivity {
         listView.setAdapter(mensajeAdapter);
 
         cargarMensajes(usuarioId, contactoId, destinatarioContactoId); // Cargar mensajes al iniciar la actividad
-
 
         enviarMensaje.setOnClickListener(new View.OnClickListener() {
             @Override

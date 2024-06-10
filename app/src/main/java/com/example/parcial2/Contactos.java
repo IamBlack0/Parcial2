@@ -40,12 +40,7 @@ public class Contactos extends AppCompatActivity {
 
     private void LlenarListViews() {
         List<Contacto> contactos = this.ObtenerContactos();
-        if (contactos.isEmpty()) {
-            Toast.makeText(this, "No se encontraron contactos", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Contactos encontrados: " + contactos.size(), Toast.LENGTH_SHORT).show();
-        }
-        ContactoAdapter contactoAdapter = new ContactoAdapter(ContactosList.getContext(), contactos);
+        ContactoAdapter contactoAdapter = new ContactoAdapter(ContactosList.getContext(), contactos, currentUser.getId());
         ContactosList.setAdapter(contactoAdapter);
     }
 
@@ -57,7 +52,6 @@ public class Contactos extends AppCompatActivity {
             // Aquí se inicializan los contactos por primera vez y se guardan
             contactos = inicializarContactos();
             guardarContactos(contactos);
-            Toast.makeText(this, "Contactos inicializados y guardados", Toast.LENGTH_SHORT).show();
         } else {
             for (String contactoData : contactosData.split(";")) {
                 String[] parts = contactoData.split("\\|");
@@ -70,7 +64,6 @@ public class Contactos extends AppCompatActivity {
                     contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
                 }
             }
-            Toast.makeText(this, "Contactos cargados desde SharedPreferences", Toast.LENGTH_SHORT).show();
         }
 
         // Filtrar contactos según el usuario actual
@@ -82,7 +75,6 @@ public class Contactos extends AppCompatActivity {
                 contactosFiltrados.add(contacto);
             }
         }
-        Toast.makeText(this, "Contactos filtrados: " + contactosFiltrados.size(), Toast.LENGTH_SHORT).show();
         return contactosFiltrados;
     }
 
@@ -132,7 +124,6 @@ public class Contactos extends AppCompatActivity {
         for (Usuario usuario : usuarios) {
             if (usuario.getId() == usuarioId) {
                 currentUser = usuario;
-                Toast.makeText(this, "Usuario cargado: " + currentUser.getNombre(), Toast.LENGTH_SHORT).show();
                 break;
             }
         }
