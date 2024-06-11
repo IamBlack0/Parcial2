@@ -1,5 +1,5 @@
 package com.example.parcial2;
-
+// RUBEN RIVERA - LUIS MURCIA
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
