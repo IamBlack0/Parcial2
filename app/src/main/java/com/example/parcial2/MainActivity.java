@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -58,11 +56,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         cargarUsuarioActual();
-        if (currentUser != null) {
-            cargarConversacionesRecientes();
-        } else {
-            Toast.makeText(this, "No se pudo cargar el usuario actual", Toast.LENGTH_SHORT).show();
-        }
+        cargarConversacionesRecientes();
     }
 
     @Override
@@ -106,30 +100,14 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UsuariosPrefs", MODE_PRIVATE);
         int currentUserId = prefs.getInt("currentUserId", -1); // Asegúrate de que este valor se actualice correctamente
         List<Usuario> usuarios = obtenerUsuarios();
-        if (currentUserId == -1 && !usuarios.isEmpty()) {
-            // Si no hay usuario guardado, inicializar con el usuario1
-            currentUser = usuarios.get(0);
-            guardarUsuarioActual();
-        } else {
-            for (Usuario usuario : usuarios) {
-                if (usuario.getId() == currentUserId) {
-                    currentUser = usuario;
-                    break;
-                }
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId() == currentUserId) {
+                currentUser = usuario;
+                nombreTextView.setText(currentUser.getNombre());
+                apellidoTextView.setText(currentUser.getApellido());
+                break;
             }
         }
-        if (currentUser != null) {
-            nombreTextView.setText(currentUser.getNombre());
-            apellidoTextView.setText(currentUser.getApellido());
-        }
-    }
-
-    private void actualizarVista() {
-        // Limpiar el adaptador de la lista
-        conversationsListView.setAdapter(null);
-
-        // Recargar las conversaciones o contactos según el usuario actual
-        cargarConversacionesRecientes();
     }
 
     private void cargarConversacionesRecientes() {
@@ -144,7 +122,9 @@ public class MainActivity extends AppCompatActivity {
         List<Conversacion> conversaciones = new ArrayList<>();
         int usuarioId = currentUser.getId(); // Asumiendo que tienes un currentUser definido
 
-        for (int i = 2; i <= 99; i++) {
+        Toast.makeText(this, "Cargando conversaciones para el usuario: " + usuarioId, Toast.LENGTH_SHORT).show();
+
+        for (int i = 2; i <= 6; i++) {
             String chatKey = getChatKey(1, i);
             cargarConversacion(chatKey, 1, i, conversaciones);
         }
@@ -196,7 +176,8 @@ public class MainActivity extends AppCompatActivity {
     private void cargarConversacion(String chatKey, int remitenteId, int destinatarioId, List<Conversacion> conversaciones) {
         SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
         String mensajesData = prefs.getString("mensajes", "");
-
+        Log.d("Debug", "Buscando clave: " + chatKey + " | Datos encontrados: " + mensajesData);
+        Toast.makeText(this, "Buscando clave: " + chatKey + " | Datos encontrados: " + mensajesData, Toast.LENGTH_LONG).show();
         if (!mensajesData.isEmpty()) {
             String[] mensajesArray = mensajesData.split("\n");
             if (mensajesArray.length > 0) {
@@ -217,11 +198,11 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     conversaciones.add(new Conversacion(remitenteId, destinatarioId, destinatarioId, nombre, "", 0, ultimoMensaje, new Date(timestamp).toString()));
-
+                    Toast.makeText(this, "Conversación cargada: " + nombre, Toast.LENGTH_SHORT).show();
                 }
             }
         } else {
-
+            Toast.makeText(this, "No se encontraron datos para " + chatKey, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -243,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                     cambiarUsuario();
                     return true;
                 } else if (id == R.id.AgregarContacto) {
-                    mostrarDialogoAgregarContacto();
+                    agregarContacto();
                     return true;
                 } else {
                     return false;
@@ -253,109 +234,9 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-    private List<Contacto> obtenerContactos() {
-        SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);
-        String contactosData = prefs.getString("contactos", "");
-        List<Contacto> contactos = new ArrayList<>();
-        if (!contactosData.isEmpty()) {
-            for (String contactoData : contactosData.split(";")) {
-                String[] parts = contactoData.split("\\|");
-                if (parts.length == 5) {  // Asegúrate de que ahora esperamos 5 partes por contacto
-                    int id = Integer.parseInt(parts[0]);
-                    String nombre = parts[1];
-                    String apellido = parts[2];
-                    String telefono = parts[3];
-                    int imagenId = Integer.parseInt(parts[4]);  // Nuevo campo para ID de imagen
-                    contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
-                }
-            }
-        }
-        return contactos;
+    private void agregarContacto() {
+        // Implementa la lógica para agregar un contacto aquí
     }
-
-
-    private void agregarContacto(int id, String nombre, String apellido, String telefono, int imagenId) {
-        List<Contacto> contactos = obtenerContactos();
-        contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
-        guardarContactos(contactos);
-        Toast.makeText(this, "Contacto agregado exitosamente", Toast.LENGTH_SHORT).show();
-    }
-
-
-    private void guardarContactos(List<Contacto> contactos) {
-        SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        StringBuilder data = new StringBuilder();
-        for (Contacto contacto : contactos) {
-            data.append(contacto.getId()).append("|")
-                    .append(contacto.getNombre()).append("|")
-                    .append(contacto.getApellido()).append("|")
-                    .append(contacto.getTelefono()).append("|")
-                    .append(contacto.getImagenId()).append(";");
-        }
-        editor.putString("contactos", data.toString());
-        editor.apply();
-    }
-
-    private void mostrarDialogoAgregarContacto() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Agregar Contacto");
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        EditText nombreEditText = new EditText(this);
-        EditText apellidoEditText = new EditText(this);
-        EditText telefonoEditText = new EditText(this);
-        EditText imagenIdEditText = new EditText(this);
-
-        nombreEditText.setHint("Nombre");
-        apellidoEditText.setHint("Apellido");
-        telefonoEditText.setHint("Teléfono");
-        imagenIdEditText.setHint("ID de Imagen");
-
-        layout.addView(nombreEditText);
-        layout.addView(apellidoEditText);
-        layout.addView(telefonoEditText);
-        layout.addView(imagenIdEditText);
-
-        builder.setView(layout)
-                .setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        String nombre = nombreEditText.getText().toString();
-                        String apellido = apellidoEditText.getText().toString();
-                        String telefono = telefonoEditText.getText().toString();
-                        int imagenId = Integer.parseInt(imagenIdEditText.getText().toString());
-
-                        // Generar un nuevo ID para el contacto
-                        int nuevoId = generarNuevoIdContacto();
-
-                        agregarContacto(nuevoId, nombre, apellido, telefono, imagenId);
-                    }
-                })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-//prueba
-    private int generarNuevoIdContacto() {
-        List<Contacto> contactos = obtenerContactos();
-        int maxId = 0;
-        for (Contacto contacto : contactos) {
-            if (contacto.getId() > maxId) {
-                maxId = contacto.getId();
-            }
-        }
-        return maxId + 1;
-    }
-
-
-
 
     public void editarPerfil() {
         Intent i = new Intent(this, EditarPerfil.class);
@@ -378,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                         currentUser = usuarios.get(which);
                         actualizarUsuarioActual(); // Asegúrate de llamar a este método
                         guardarUsuarioActual(); // Guardar el usuario actual en SharedPreferences
-                        actualizarVista(); // Actualizar la vista para el nuevo usuario
+                        cargarConversacionesRecientes(); // Volver a cargar las conversaciones para el nuevo usuario
                     }
                 });
         builder.create().show();
