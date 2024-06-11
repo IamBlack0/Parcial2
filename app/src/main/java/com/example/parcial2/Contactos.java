@@ -27,7 +27,7 @@ public class Contactos extends AppCompatActivity {
         setContentView(R.layout.activity_contactos);
 
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
-        Toast.makeText(this, "Usuario ID: " + usuarioId, Toast.LENGTH_SHORT).show(); // Mostrar el ID del usuario
+
         cargarUsuarioActual(usuarioId);
 
         this.InicializarControles();
@@ -81,12 +81,12 @@ public class Contactos extends AppCompatActivity {
     private List<Contacto> inicializarContactos() {
         List<Contacto> contactos = new ArrayList<>();
         // Asumiendo que tienes imágenes predeterminadas para cada contacto en res/drawable
-        contactos.add(new Contacto(1, "Contacto1", "Apellido1", "+507 0000-0001", R.drawable.yo_xx));
-        contactos.add(new Contacto(2, "Contacto2", "Apellido2", "+507 0000-0002", R.drawable.yo_xx));
-        contactos.add(new Contacto(3, "Contacto3", "Apellido3", "+507 0000-0003", R.drawable.yo_xx));
-        contactos.add(new Contacto(4, "Contacto4", "Apellido4", "+507 0000-0004", R.drawable.yo_xx));
-        contactos.add(new Contacto(5, "Contacto5", "Apellido5", "+507 0000-0005", R.drawable.yo_xx));
-        contactos.add(new Contacto(6, "Contacto6", "Apellido6", "+507 0000-0006", R.drawable.yo_xx));
+        contactos.add(new Contacto(1, "Ruben", "Rivera", "+507 0000-0001", R.drawable.yo_xx));
+        contactos.add(new Contacto(2, "Patron", "Murcia", "+507 0000-0002", R.drawable.elpatron));
+        contactos.add(new Contacto(3, "Tortilla", "Cuara", "+507 0000-0003", R.drawable.frieren));
+        contactos.add(new Contacto(4, "Escalera", "domicilio", "+507 0000-0004", R.drawable.sala));
+        contactos.add(new Contacto(5, "Micaelo", "aparecio", "+507 0000-0005", R.drawable.woot));
+        contactos.add(new Contacto(6, "Pollo", "gratis", "+507 0000-0006", R.drawable.pollo));
         return contactos;
     }
 

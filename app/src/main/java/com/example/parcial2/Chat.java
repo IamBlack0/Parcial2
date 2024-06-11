@@ -54,8 +54,6 @@ public class Chat extends AppCompatActivity {
         nombreTextView.setText(nombre);
         apellidoTextView.setText(apellido);
 
-        // Mostrar Toast con los IDs de usuario y contacto
-        Toast.makeText(this, "Usuario ID: " + usuarioId + ", Contacto ID: " + contactoId + ", Destinatario Contacto ID: " + destinatarioContactoId, Toast.LENGTH_LONG).show();
 
         mensajes = new ArrayList<>();
         mensajeAdapter = new MensajeAdapter(this, mensajes, usuarioId);
@@ -96,7 +94,7 @@ public class Chat extends AppCompatActivity {
             }
             mensajeAdapter.notifyDataSetChanged();
         } else {
-            Toast.makeText(this, "No se encontraron mensajes para la clave: " + chatKey, Toast.LENGTH_LONG).show();
+
         }
     }
 
@@ -115,7 +113,7 @@ public class Chat extends AppCompatActivity {
     }
 
     public void VolverChatAmensaje(View view) {
-        Toast.makeText(this, "Volver a MainActivity", Toast.LENGTH_SHORT).show();
+
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("usuarioId", usuarioId); // Pasar el ID del usuario actual
         intent.putExtra("contactoId", contactoId); // Pasar el ID del contacto actual

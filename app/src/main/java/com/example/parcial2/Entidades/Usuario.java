@@ -63,21 +63,7 @@ public class Usuario {
         this.imagenId = imagenId;
     }
 
-    public Bundle toBundle(){
-        Bundle b = new Bundle();
-        b.putInt("id", getImagenId());
-        b.putString("nombre", getNombre());
-        b.putString("apellido", getApellido());
-        b.putString("telefono", getTelefono());
-        return b;
-    }
 
-    public static Usuario toclass(Bundle b){
-        return new Usuario(
-                b.getInt("id"),
-                b.getString("nombre"),
-                b.getString("apellido"),
-                b.getString("telefono")
-        );
-    }
+
+
 }
