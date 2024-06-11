@@ -342,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
+//prueba
     private int generarNuevoIdContacto() {
         List<Contacto> contactos = obtenerContactos();
         int maxId = 0;
