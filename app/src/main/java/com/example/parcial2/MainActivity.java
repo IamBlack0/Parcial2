@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     private void cargarContactosParaUsuario2() {
         List<Contacto> contactos = this.ObtenerContactos();
         ContactoAdapter contactoAdapter = new ContactoAdapter(conversationsListView.getContext(), contactos, currentUser.getId());

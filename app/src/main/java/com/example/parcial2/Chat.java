@@ -3,6 +3,7 @@ package com.example.parcial2;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -87,13 +88,18 @@ public class Chat extends AppCompatActivity {
         if (!mensajesData.isEmpty()) {
             String[] mensajesArray = mensajesData.split("\n");
             for (String mensajeData : mensajesArray) {
-                String[] parts = mensajeData.split("\\|");
-                if (parts.length == 3) {
-                    int id = Integer.parseInt(parts[0]);
-                    String texto = parts[1];
-                    String timestamp = parts[2]; // Asumiendo que el timestamp está siendo guardado
-                    boolean esEnviado = id == usuarioId;
-                    mensajes.add(new Mensaje(texto, timestamp, esEnviado, id));
+                String[] messageParts = mensajeData.split("\\|");
+                if (messageParts.length == 3) {
+                    try {
+                        // Usar trim() para eliminar espacios antes de parsear a entero
+                        int id = Integer.parseInt(messageParts[0].trim());
+                        String texto = messageParts[1];
+                        String timestamp = messageParts[2];
+                        boolean esEnviado = id == usuarioId;
+                        mensajes.add(new Mensaje(texto, timestamp, esEnviado, id));
+                    } catch (NumberFormatException e) {
+                        Log.e("NumberFormatException", "Error al parsear el ID: '" + messageParts[0] + "'");
+                    }
                 }
             }
             mensajeAdapter.notifyDataSetChanged();
