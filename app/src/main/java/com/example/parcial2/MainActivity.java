@@ -142,11 +142,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void cargarConversacionesParaUsuario1() {
         List<Conversacion> conversaciones = new ArrayList<>();
-        int usuarioId = currentUser.getId(); // Asumiendo que tienes un currentUser definido
+        List<Contacto> contactos = obtenerContactos(); // Obtener la lista de contactos
 
-        for (int i = 2; i <= 99; i++) {
-            String chatKey = getChatKey(1, i);
-            cargarConversacion(chatKey, 1, i, conversaciones);
+        for (Contacto contacto : contactos) {
+            if (contacto.getId() != currentUser.getId()) { // Asegúrate de no incluir el usuario actual como contacto
+                String chatKey = getChatKey(1, contacto.getId());
+                cargarConversacion(chatKey, 1, contacto.getId(), contacto.getNombre(), contacto.getApellido(), contacto.getImagenId(), conversaciones);
+            }
         }
 
         if (!conversaciones.isEmpty()) {
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No hay conversaciones para cargar", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void cargarContactosParaUsuario2() {
         List<Contacto> contactos = this.ObtenerContactos();
@@ -193,37 +196,22 @@ public class MainActivity extends AppCompatActivity {
         return contactosFiltrados;
     }
 
-    private void cargarConversacion(String chatKey, int remitenteId, int destinatarioId, List<Conversacion> conversaciones) {
+    private void cargarConversacion(String chatKey, int remitenteId, int destinatarioId, String nombre, String apellido, int imagenId, List<Conversacion> conversaciones) {
         SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
         String mensajesData = prefs.getString("mensajes", "");
 
         if (!mensajesData.isEmpty()) {
             String[] mensajesArray = mensajesData.split("\n");
-            if (mensajesArray.length > 0) {
-                String lastMessageData = mensajesArray[mensajesArray.length - 1];
-                String[] messageParts = lastMessageData.split("\\|");
-                if (messageParts.length == 2) { // Ajustado a 2 partes según tu formato
-                    int remitenteMensajeId = Integer.parseInt(messageParts[0]);
-                    String ultimoMensaje = messageParts[1];
-                    long timestamp = System.currentTimeMillis(); // Usar el tiempo actual si no hay timestamp
-
-                    String nombre = "Contacto " + destinatarioId; // Simplemente usando el índice como parte del nombre para simplificar
-
-                    // Ajustar el último mensaje según quién lo envió
-                    if (remitenteMensajeId == remitenteId) {
-                        ultimoMensaje = "Tú: " + ultimoMensaje;
-                    } else {
-                        ultimoMensaje = nombre + ": " + ultimoMensaje;
-                    }
-
-                    conversaciones.add(new Conversacion(remitenteId, destinatarioId, destinatarioId, nombre, "", 0, ultimoMensaje, new Date(timestamp).toString()));
-
-                }
+            String lastMessageData = mensajesArray[mensajesArray.length - 1];
+            String[] messageParts = lastMessageData.split("\\|");
+            if (messageParts.length == 2) {
+                String ultimoMensaje = messageParts[1];
+                long timestamp = System.currentTimeMillis(); // Usar el tiempo actual si no hay timestamp
+                conversaciones.add(new Conversacion(remitenteId, destinatarioId, destinatarioId, nombre, apellido, imagenId, ultimoMensaje, new Date(timestamp).toString()));
             }
-        } else {
-
         }
     }
+
 
     private String getChatKey(int id1, int id2) {
         return "Chat_" + Math.min(id1, id2) + "_" + Math.max(id1, id2);
