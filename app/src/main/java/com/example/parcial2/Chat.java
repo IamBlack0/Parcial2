@@ -16,8 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.parcial2.Adaptadores.MensajeAdapter;
 import com.example.parcial2.Entidades.Mensaje;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Chat extends AppCompatActivity {
 
@@ -85,28 +88,31 @@ public class Chat extends AppCompatActivity {
             String[] mensajesArray = mensajesData.split("\n");
             for (String mensajeData : mensajesArray) {
                 String[] parts = mensajeData.split("\\|");
-                if (parts.length == 2) {
+                if (parts.length == 3) {
                     int id = Integer.parseInt(parts[0]);
                     String texto = parts[1];
+                    String timestamp = parts[2]; // Asumiendo que el timestamp está siendo guardado
                     boolean esEnviado = id == usuarioId;
-                    mensajes.add(new Mensaje(texto, "hoy", esEnviado, id));
+                    mensajes.add(new Mensaje(texto, timestamp, esEnviado, id));
                 }
             }
             mensajeAdapter.notifyDataSetChanged();
-        } else {
-
         }
     }
+
 
     private void guardarMensajeEnHistorial(String mensaje, int contactoId, int destinatarioContactoId) {
         String chatKey = getChatKey(contactoId, destinatarioContactoId);
         SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
         String existingMessages = prefs.getString("mensajes", "");
-        String newMessageRecord = usuarioId + "|" + mensaje + "\n"; // Asegúrate de que el formato aquí es correcto
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String timestamp = sdf.format(new Date());
+        String newMessageRecord = usuarioId + "|" + mensaje + "|" + timestamp + "\n";
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("mensajes", existingMessages + newMessageRecord);
         editor.apply();
     }
+
 
     private String getChatKey(int id1, int id2) {
         return "Chat_" + Math.min(id1, id2) + "_" + Math.max(id1, id2);

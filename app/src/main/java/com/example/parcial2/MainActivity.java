@@ -205,15 +205,23 @@ public class MainActivity extends AppCompatActivity {
 
         if (!mensajesData.isEmpty()) {
             String[] mensajesArray = mensajesData.split("\n");
-            String lastMessageData = mensajesArray[mensajesArray.length - 1];
-            String[] messageParts = lastMessageData.split("\\|");
-            if (messageParts.length == 2) {
-                String ultimoMensaje = messageParts[1];
-                long timestamp = System.currentTimeMillis(); // Usar el tiempo actual si no hay timestamp
-                conversaciones.add(new Conversacion(remitenteId, destinatarioId, destinatarioId, nombre, apellido, imagenId, ultimoMensaje, new Date(timestamp).toString()));
+            for (String mensajeData : mensajesArray) {
+                String[] messageParts = mensajeData.split("\\|");
+                if (messageParts.length == 3) {
+                    String ultimoMensaje = messageParts[1];
+                    String timestamp = messageParts[2]; // Asegúrate de que estás guardando y cargando el timestamp
+                    conversaciones.add(new Conversacion(remitenteId, destinatarioId, destinatarioId, nombre, apellido, imagenId, ultimoMensaje, timestamp));
+                }
             }
         }
+        if (!conversaciones.isEmpty()) {
+            conversacionAdapter = new ConversacionAdapter(this, conversaciones);
+            conversationsListView.setAdapter(conversacionAdapter);
+        } else {
+            Toast.makeText(this, "No hay conversaciones para cargar", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
 
     private String getChatKey(int id1, int id2) {
