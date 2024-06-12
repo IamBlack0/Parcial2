@@ -66,7 +66,7 @@ public class Chat extends AppCompatActivity {
             public void onClick(View v) {
                 String texto = inputMensaje.getText().toString().trim();
                 if (!texto.isEmpty()) {
-                    Mensaje nuevoMensaje = new Mensaje(texto, "15:18 PM", true, usuarioId);
+                    Mensaje nuevoMensaje = new Mensaje(texto, "HOY", true, usuarioId);
                     mensajes.add(nuevoMensaje);
                     mensajeAdapter.notifyDataSetChanged();
                     inputMensaje.setText(""); // Limpiar el campo de texto
@@ -89,7 +89,7 @@ public class Chat extends AppCompatActivity {
                     int id = Integer.parseInt(parts[0]);
                     String texto = parts[1];
                     boolean esEnviado = id == usuarioId;
-                    mensajes.add(new Mensaje(texto, "Hora", esEnviado, id));
+                    mensajes.add(new Mensaje(texto, "hoy", esEnviado, id));
                 }
             }
             mensajeAdapter.notifyDataSetChanged();

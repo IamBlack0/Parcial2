@@ -1,5 +1,6 @@
 package com.example.parcial2;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -291,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    @SuppressLint("ResourceType")
     private void mostrarDialogoAgregarContacto() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Agregar Contacto");
@@ -301,17 +305,36 @@ public class MainActivity extends AppCompatActivity {
         EditText nombreEditText = new EditText(this);
         EditText apellidoEditText = new EditText(this);
         EditText telefonoEditText = new EditText(this);
-        EditText imagenIdEditText = new EditText(this);
 
         nombreEditText.setHint("Nombre");
         apellidoEditText.setHint("Apellido");
         telefonoEditText.setHint("Teléfono");
-        imagenIdEditText.setHint("ID de Imagen");
 
         layout.addView(nombreEditText);
         layout.addView(apellidoEditText);
         layout.addView(telefonoEditText);
-        layout.addView(imagenIdEditText);
+
+        // Crear RadioGroup para las imágenes
+        RadioGroup radioGroup = new RadioGroup(this);
+        radioGroup.setOrientation(RadioGroup.HORIZONTAL);
+
+        RadioButton radioButton1 = new RadioButton(this);
+        radioButton1.setText("Imagen 1");
+        radioButton1.setId(R.drawable.screenshot_20240611_162322); // Usa el ID del recurso de la imagen
+
+        RadioButton radioButton2 = new RadioButton(this);
+        radioButton2.setText("Imagen 2");
+        radioButton2.setId(R.drawable.gpgcrfaagaa95xc); // Usa el ID del recurso de la imagen
+
+        RadioButton radioButton3 = new RadioButton(this);
+        radioButton3.setText("Imagen 3");
+        radioButton3.setId(R.drawable.fb_img_1714678110428); // Usa el ID del recurso de la imagen
+
+        radioGroup.addView(radioButton1);
+        radioGroup.addView(radioButton2);
+        radioGroup.addView(radioButton3);
+
+        layout.addView(radioGroup);
 
         builder.setView(layout)
                 .setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
@@ -319,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
                         String nombre = nombreEditText.getText().toString();
                         String apellido = apellidoEditText.getText().toString();
                         String telefono = telefonoEditText.getText().toString();
-                        int imagenId = Integer.parseInt(imagenIdEditText.getText().toString());
+                        int imagenId = radioGroup.getCheckedRadioButtonId(); // Obtener el ID de la imagen seleccionada
 
                         // Generar un nuevo ID para el contacto
                         int nuevoId = generarNuevoIdContacto();
@@ -336,7 +359,8 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-//prueba
+
+    //prueba
     private int generarNuevoIdContacto() {
         List<Contacto> contactos = obtenerContactos();
         int maxId = 0;
