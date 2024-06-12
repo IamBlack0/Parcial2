@@ -237,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.EditarPerfil) {
-                    editarPerfil();
+                    int contactoId = obtenerIdDelContactoActual(); // Implementa este método según tu lógica de aplicación
+                    editarPerfil(contactoId);
                     return true;
                 } else if (id == R.id.CambiarUsuario) {
                     cambiarUsuario();
@@ -279,6 +280,11 @@ public class MainActivity extends AppCompatActivity {
         contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
         guardarContactos(contactos);
         Toast.makeText(this, "Contacto agregado exitosamente", Toast.LENGTH_SHORT).show();
+    }
+
+    private int obtenerIdDelContactoActual() {
+        // Este es un ejemplo, necesitas adaptarlo a tu lógica de aplicación
+        return currentUser.getId(); // Suponiendo que el ID del usuario es el mismo que el del contacto
     }
 
 
@@ -357,11 +363,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void editarPerfil() {
+    public void editarPerfil(int contactoId) {
         Intent i = new Intent(this, EditarPerfil.class);
         i.putExtra("usuarioId", currentUser.getId());
+        int imagenId = obtenerImagenIdDelContacto(contactoId); // Obtiene la ID de la imagen del contacto
+        i.putExtra("imagenId", imagenId);
         startActivityForResult(i, 1);
     }
+
+
+    private int obtenerImagenIdDelContacto(int contactoId) {
+        List<Contacto> contactos = obtenerContactos(); // Asegúrate de que este método devuelve todos los contactos
+        for (Contacto contacto : contactos) {
+            if (contacto.getId() == contactoId) {
+                return contacto.getImagenId();
+            }
+        }
+        return 0; // Retorna 0 si no encuentra nada, ajusta según necesidad
+    }
+
+
 
     public void cambiarUsuario() {
         final List<Usuario> usuarios = obtenerUsuarios(); // Cargar la lista de usuarios desde SharedPreferences

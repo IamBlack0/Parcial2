@@ -52,7 +52,7 @@
             android:id="@+id/ImagenPerfil"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/elpatron"
+            android:src="@drawable/baseline_person_24"
             android:scaleType="fitXY"
             android:layout_centerInParent="true" />
 

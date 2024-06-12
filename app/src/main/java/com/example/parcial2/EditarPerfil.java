@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,10 +32,18 @@ public class EditarPerfil extends AppCompatActivity {
         nombreEditText = findViewById(R.id.nombreEditar);
         apellidoEditText = findViewById(R.id.apellidoEditar);
         telefonoTextView = findViewById(R.id.telefonoEditar);
+        ImageView perfilImageView = findViewById(R.id.ImagenPerfil);
 
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
+        int imagenId = getIntent().getIntExtra("imagenId", 0); // Usar 0 o cualquier ID de imagen por defecto
+        if (imagenId != 0) {
+            perfilImageView.setImageResource(imagenId);
+        }
+
         cargarUsuarioActual(usuarioId);
+        perfilImageView.setImageResource(imagenId); // Establecer la imagen del contacto
     }
+
 
     public void VolverEditAMensaje(View view) {
         Intent intent = new Intent();
