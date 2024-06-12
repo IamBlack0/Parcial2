@@ -29,7 +29,9 @@ import com.example.parcial2.Entidades.Usuario;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -144,16 +146,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void cargarConversacionesParaUsuario1() {
-        List<Conversacion> conversaciones = new ArrayList<>();
+        Map<Integer, Conversacion> ultimaConversacionPorContacto = new HashMap<>();
         List<Contacto> contactos = obtenerContactos(); // Obtener la lista de contactos
 
         for (Contacto contacto : contactos) {
             if (contacto.getId() != currentUser.getId()) { // Asegúrate de no incluir el usuario actual como contacto
                 String chatKey = getChatKey(1, contacto.getId());
-                cargarConversacion(chatKey, 1, contacto.getId(), contacto.getNombre(), contacto.getApellido(), contacto.getImagenId(), conversaciones);
+                SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
+                String mensajesData = prefs.getString("mensajes", "");
+
+                if (!mensajesData.isEmpty()) {
+                    String[] mensajesArray = mensajesData.split("\n");
+                    for (String mensajeData : mensajesArray) {
+                        String[] messageParts = mensajeData.split("\\|");
+                        if (messageParts.length == 3) {
+                            String ultimoMensaje = messageParts[1];
+                            String timestamp = messageParts[2];
+                            Conversacion conversacion = new Conversacion(1, contacto.getId(), contacto.getId(), contacto.getNombre(), contacto.getApellido(), contacto.getImagenId(), ultimoMensaje, timestamp);
+                            ultimaConversacionPorContacto.put(contacto.getId(), conversacion);
+                        }
+                    }
+                }
             }
         }
 
+        List<Conversacion> conversaciones = new ArrayList<>(ultimaConversacionPorContacto.values());
         if (!conversaciones.isEmpty()) {
             conversacionAdapter = new ConversacionAdapter(this, conversaciones);
             conversationsListView.setAdapter(conversacionAdapter);
@@ -161,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No hay conversaciones para cargar", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
 
     private void cargarContactosParaUsuario2() {

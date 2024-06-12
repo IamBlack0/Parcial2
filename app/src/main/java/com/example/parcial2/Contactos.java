@@ -29,7 +29,7 @@ public class Contactos extends AppCompatActivity {
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
 
         cargarUsuarioActual(usuarioId);
-
+        verificarPrimeraEjecucionYInicializarContactos();
         this.InicializarControles();
     }
 
@@ -77,6 +77,20 @@ public class Contactos extends AppCompatActivity {
         }
         return contactosFiltrados;
     }
+
+    private void verificarPrimeraEjecucionYInicializarContactos() {
+        SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);
+        boolean esPrimeraEjecucion = prefs.getBoolean("esPrimeraEjecucionContactos", true);
+        if (esPrimeraEjecucion) {
+            List<Contacto> contactos = inicializarContactos();
+            guardarContactos(contactos);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("esPrimeraEjecucionContactos", false);
+            editor.apply();
+        }
+    }
+
+
 
     private List<Contacto> inicializarContactos() {
         List<Contacto> contactos = new ArrayList<>();
