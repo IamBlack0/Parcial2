@@ -232,8 +232,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.EditarPerfil) {
-                    int contactoId = obtenerIdDelContactoActual(); // Implementa este método según tu lógica de aplicación
-                    editarPerfil(contactoId);
+                   // int contactoId = obtenerIdDelContactoActual(); // Implementa este método según tu lógica de aplicación
+                    editarPerfil();
                     return true;
                 } else if (id == R.id.CambiarUsuario) {
                     cambiarUsuario();
@@ -257,11 +257,6 @@ public class MainActivity extends AppCompatActivity {
         contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
         guardarContactos(contactos);
         Toast.makeText(this, "Contacto agregado exitosamente", Toast.LENGTH_SHORT).show();
-    }
-
-    private int obtenerIdDelContactoActual() {
-        // Este es un ejemplo, necesitas adaptarlo a tu lógica de aplicación
-        return currentUser.getId(); // Suponiendo que el ID del usuario es el mismo que el del contacto
     }
 
 
@@ -362,25 +357,25 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void editarPerfil(int contactoId) {
+    public void editarPerfil() {
         Intent i = new Intent(this, EditarPerfil.class);
         i.putExtra("usuarioId", currentUser.getId());
-        String imagenId = obtenerImagenIdDelContacto(contactoId); // Obtiene la ID de la imagen del contacto
+        String imagenId = obtenerImagenIdPorUsuario(currentUser.getId()); // Obtiene la URI de la imagen del contacto correspondiente al usuario
         i.putExtra("imagenId", imagenId);
         startActivityForResult(i, 1);
     }
 
-
-    private String obtenerImagenIdDelContacto(int contactoId) {
+    private String obtenerImagenIdPorUsuario(int usuarioId) {
         List<Contacto> contactos = ObtenerContactos(); // Asegúrate de que este método devuelve todos los contactos
         for (Contacto contacto : contactos) {
-            if (contacto.getId() == contactoId) {
-                return contacto.getImagenId(); // Retorna el ID de la imagen como String
+            if (usuarioId == 1 && contacto.getId() == 1) { // Si es usuario1, toma la imagen de contacto1
+                return contacto.getImagenId();
+            } else if (usuarioId == 2 && contacto.getId() == 2) { // Si es usuario2, toma la imagen de contacto2
+                return contacto.getImagenId();
             }
         }
         return ""; // Retorna una cadena vacía si no encuentra nada
     }
-
 
 
 

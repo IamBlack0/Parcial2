@@ -2,6 +2,7 @@ package com.example.parcial2;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -12,17 +13,21 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.parcial2.Entidades.Usuario;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EditarPerfil extends AppCompatActivity {
 
+    private static final int PICK_IMAGE = 1;
     private EditText nombreEditText;
     private EditText apellidoEditText;
     private TextView telefonoTextView;
     private Usuario currentUser;
     private List<Usuario> usuarios;
+    private ImageView perfilImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +37,39 @@ public class EditarPerfil extends AppCompatActivity {
         nombreEditText = findViewById(R.id.nombreEditar);
         apellidoEditText = findViewById(R.id.apellidoEditar);
         telefonoTextView = findViewById(R.id.telefonoEditar);
-        ImageView perfilImageView = findViewById(R.id.ImagenPerfil);
+        perfilImageView = findViewById(R.id.ImagenPerfil);
 
         int usuarioId = getIntent().getIntExtra("usuarioId", -1);
-        int imagenId = getIntent().getIntExtra("imagenId", 0); // Usar 0 o cualquier ID de imagen por defecto
-        if (imagenId != 0) {
-            perfilImageView.setImageResource(imagenId);
+        if (usuarioId != -1) {
+            int contactoId = obtenerContactoIdActual(usuarioId);
+            String imagenId = obtenerImagenIdDelContacto(contactoId);
+            if (imagenId != null && !imagenId.isEmpty()) {
+                Picasso.get().load(imagenId).into(perfilImageView);
+            }
+            cargarUsuarioActual(usuarioId);
         }
-
-        cargarUsuarioActual(usuarioId);
-        perfilImageView.setImageResource(imagenId); // Establecer la imagen del contacto
     }
+
+    private int obtenerContactoIdActual(int usuarioId) {
+        // Aquí simplemente devolvemos el ID del usuario, asumiendo que cada usuario tiene un contacto con el mismo ID
+        return usuarioId;
+    }
+
+
+    private String obtenerImagenIdDelContacto(int contactoId) {
+        SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);
+        String contactosData = prefs.getString("contactos", "");
+        if (!contactosData.isEmpty()) {
+            for (String contactoData : contactosData.split(";")) {
+                String[] parts = contactoData.split("\\|");
+                if (parts.length == 5 && Integer.parseInt(parts[0]) == contactoId) {
+                    return parts[4];  // Retorna la URI de la imagen como String
+                }
+            }
+        }
+        return ""; // Retorna una cadena vacía si no encuentra nada
+    }
+
 
 
     public void VolverEditAMensaje(View view) {
@@ -61,12 +88,18 @@ public class EditarPerfil extends AppCompatActivity {
             currentUser.setApellido(nuevoApellido);
             actualizarListaUsuarios();
             guardarUsuarios();
+            // Recargar la imagen
+            String imagenId = obtenerImagenIdDelContacto(currentUser.getId());
+            if (imagenId != null && !imagenId.isEmpty()) {
+                Picasso.get().load(imagenId).into(perfilImageView);
+            }
             Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show();
             VolverEditAMensaje(view);
         } else {
             Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void actualizarListaUsuarios() {
         usuarios = obtenerUsuarios();
@@ -125,7 +158,30 @@ public class EditarPerfil extends AppCompatActivity {
         }
     }
     public void cambiarImagen(View view) {
-        // Iniciar una actividad para seleccionar una imagen de la galería o capturar una foto
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+            Picasso.get().load(selectedImage).into(perfilImageView);
+
+            // Guardar la nueva URI de la imagen en SharedPreferences
+           // guardarImagenUri(selectedImage.toString());
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 }

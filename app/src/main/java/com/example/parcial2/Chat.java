@@ -133,4 +133,28 @@ public class Chat extends AppCompatActivity {
         intent.putExtra("destinatarioContactoId", destinatarioContactoId); // Pasar el ID del contacto destinatario actual
         startActivity(intent);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarImagenPerfil();
+    }
+
+
+    private void cargarImagenPerfil() {
+        SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);
+        String contactosData = prefs.getString("contactos", "");
+        String[] contactos = contactosData.split(";");
+        for (String contacto : contactos) {
+            String[] parts = contacto.split("\\|");
+            if (Integer.parseInt(parts[0]) == contactoId) {
+                String imagenId = parts[4];
+                if (imagenId != null && !imagenId.isEmpty()) {
+                    Picasso.get().load(imagenId).into((ImageView) findViewById(R.id.ImagenPerfil));
+                }
+                break;
+            }
+        }
+    }
+
 }
