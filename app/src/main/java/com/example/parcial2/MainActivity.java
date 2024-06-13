@@ -147,11 +147,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void cargarConversacionesParaUsuario1() {
         Map<Integer, Conversacion> ultimaConversacionPorContacto = new HashMap<>();
-        List<Contacto> contactos = obtenerContactos(); // Obtener la lista de contactos
+        List<Contacto> contactos = ObtenerContactos(); // Obtener la lista de contactos
 
         for (Contacto contacto : contactos) {
             if (contacto.getId() != currentUser.getId()) { // Asegúrate de no incluir el usuario actual como contacto
-                String chatKey = getChatKey(1, contacto.getId());
+                String chatKey = getChatKey(currentUser.getId(), contacto.getId());
                 SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
                 String mensajesData = prefs.getString("mensajes", "");
 
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                         if (messageParts.length == 3) {
                             String ultimoMensaje = messageParts[1];
                             String timestamp = messageParts[2];
-                            Conversacion conversacion = new Conversacion(1, contacto.getId(), contacto.getId(), contacto.getNombre(), contacto.getApellido(), contacto.getImagenId(), ultimoMensaje, timestamp);
+                            Conversacion conversacion = new Conversacion(currentUser.getId(), contacto.getId(), contacto.getId(), contacto.getNombre(), contacto.getApellido(), contacto.getImagenId(), ultimoMensaje, timestamp);
                             ultimaConversacionPorContacto.put(contacto.getId(), conversacion);
                         }
                     }
@@ -178,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No hay conversaciones para cargar", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     String nombre = parts[1];
                     String apellido = parts[2];
                     String telefono = parts[3];
-                    int imagenId = Integer.parseInt(parts[4]);  // Nuevo campo para ID de imagen
+                    String imagenId = parts[4];  // Cambiado a String
                     contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
                 }
             }
@@ -218,31 +219,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return contactosFiltrados;
     }
-
-    private void cargarConversacion(String chatKey, int remitenteId, int destinatarioId, String nombre, String apellido, int imagenId, List<Conversacion> conversaciones) {
-        SharedPreferences prefs = getSharedPreferences(chatKey, MODE_PRIVATE);
-        String mensajesData = prefs.getString("mensajes", "");
-
-        if (!mensajesData.isEmpty()) {
-            String[] mensajesArray = mensajesData.split("\n");
-            for (String mensajeData : mensajesArray) {
-                String[] messageParts = mensajeData.split("\\|");
-                if (messageParts.length == 3) {
-                    String ultimoMensaje = messageParts[1];
-                    String timestamp = messageParts[2]; // Asegúrate de que estás guardando y cargando el timestamp
-                    conversaciones.add(new Conversacion(remitenteId, destinatarioId, destinatarioId, nombre, apellido, imagenId, ultimoMensaje, timestamp));
-                }
-            }
-        }
-        if (!conversaciones.isEmpty()) {
-            conversacionAdapter = new ConversacionAdapter(this, conversaciones);
-            conversationsListView.setAdapter(conversacionAdapter);
-        } else {
-            Toast.makeText(this, "No hay conversaciones para cargar", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
 
     private String getChatKey(int id1, int id2) {
         return "Chat_" + Math.min(id1, id2) + "_" + Math.max(id1, id2);
@@ -273,29 +249,11 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-    private List<Contacto> obtenerContactos() {
-        SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);
-        String contactosData = prefs.getString("contactos", "");
-        List<Contacto> contactos = new ArrayList<>();
-        if (!contactosData.isEmpty()) {
-            for (String contactoData : contactosData.split(";")) {
-                String[] parts = contactoData.split("\\|");
-                if (parts.length == 5) {  // Asegúrate de que ahora esperamos 5 partes por contacto
-                    int id = Integer.parseInt(parts[0]);
-                    String nombre = parts[1];
-                    String apellido = parts[2];
-                    String telefono = parts[3];
-                    int imagenId = Integer.parseInt(parts[4]);  // Nuevo campo para ID de imagen
-                    contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
-                }
-            }
-        }
-        return contactos;
-    }
 
 
-    private void agregarContacto(int id, String nombre, String apellido, String telefono, int imagenId) {
-        List<Contacto> contactos = obtenerContactos();
+
+    private void agregarContacto(int id, String nombre, String apellido, String telefono, String imagenId) {
+        List<Contacto> contactos = ObtenerContactos();
         contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
         guardarContactos(contactos);
         Toast.makeText(this, "Contacto agregado exitosamente", Toast.LENGTH_SHORT).show();
@@ -347,16 +305,16 @@ public class MainActivity extends AppCompatActivity {
         radioGroup.setOrientation(RadioGroup.HORIZONTAL);
 
         RadioButton radioButton1 = new RadioButton(this);
-        radioButton1.setText("Imagen 1");
-        radioButton1.setId(R.drawable.screenshot_20240611_162322); // Usa el ID del recurso de la imagen
+        radioButton1.setText("https://pbs.twimg.com/media/GP6oYxDasAABYZe?format=jpg&name=900x900");
+        radioButton1.setTag("path_to_image_1"); // Cambiado a usar tag con ruta de imagen
 
         RadioButton radioButton2 = new RadioButton(this);
-        radioButton2.setText("Imagen 2");
-        radioButton2.setId(R.drawable.gpgcrfaagaa95xc); // Usa el ID del recurso de la imagen
+        radioButton2.setText("https://pbs.twimg.com/media/GP6oYxDasAABYZe?format=jpg&name=900x900");
+        radioButton2.setTag("path_to_image_2"); // Cambiado a usar tag con ruta de imagen
 
         RadioButton radioButton3 = new RadioButton(this);
-        radioButton3.setText("Imagen 3");
-        radioButton3.setId(R.drawable.fb_img_1714678110428); // Usa el ID del recurso de la imagen
+        radioButton3.setText("https://pbs.twimg.com/media/GP6oYxDasAABYZe?format=jpg&name=900x900");
+        radioButton3.setTag("path_to_image_3"); // Cambiado a usar tag con ruta de imagen
 
         radioGroup.addView(radioButton1);
         radioGroup.addView(radioButton2);
@@ -370,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
                         String nombre = nombreEditText.getText().toString();
                         String apellido = apellidoEditText.getText().toString();
                         String telefono = telefonoEditText.getText().toString();
-                        int imagenId = radioGroup.getCheckedRadioButtonId(); // Obtener el ID de la imagen seleccionada
+                        String imagenId = (String) radioGroup.findViewById(radioGroup.getCheckedRadioButtonId()).getTag(); // Obtener el tag de la imagen seleccionada
 
                         // Generar un nuevo ID para el contacto
                         int nuevoId = generarNuevoIdContacto();
@@ -388,9 +346,10 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+
     //prueba
     private int generarNuevoIdContacto() {
-        List<Contacto> contactos = obtenerContactos();
+        List<Contacto> contactos = ObtenerContactos();
         int maxId = 0;
         for (Contacto contacto : contactos) {
             if (contacto.getId() > maxId) {
@@ -406,21 +365,23 @@ public class MainActivity extends AppCompatActivity {
     public void editarPerfil(int contactoId) {
         Intent i = new Intent(this, EditarPerfil.class);
         i.putExtra("usuarioId", currentUser.getId());
-        int imagenId = obtenerImagenIdDelContacto(contactoId); // Obtiene la ID de la imagen del contacto
+        String imagenId = obtenerImagenIdDelContacto(contactoId); // Obtiene la ID de la imagen del contacto
         i.putExtra("imagenId", imagenId);
         startActivityForResult(i, 1);
     }
 
 
-    private int obtenerImagenIdDelContacto(int contactoId) {
-        List<Contacto> contactos = obtenerContactos(); // Asegúrate de que este método devuelve todos los contactos
+    private String obtenerImagenIdDelContacto(int contactoId) {
+        List<Contacto> contactos = ObtenerContactos(); // Asegúrate de que este método devuelve todos los contactos
         for (Contacto contacto : contactos) {
             if (contacto.getId() == contactoId) {
-                return contacto.getImagenId();
+                return contacto.getImagenId(); // Retorna el ID de la imagen como String
             }
         }
-        return 0; // Retorna 0 si no encuentra nada, ajusta según necesidad
+        return ""; // Retorna una cadena vacía si no encuentra nada
     }
+
+
 
 
 

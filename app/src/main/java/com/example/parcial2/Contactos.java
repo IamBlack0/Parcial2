@@ -60,7 +60,7 @@ public class Contactos extends AppCompatActivity {
                     String nombre = parts[1];
                     String apellido = parts[2];
                     String telefono = parts[3];
-                    int imagenId = Integer.parseInt(parts[4]);  // Nuevo campo para ID de imagen
+                    String imagenId = parts[4];  // Nuevo campo para ID de imagen
                     contactos.add(new Contacto(id, nombre, apellido, telefono, imagenId));
                 }
             }
@@ -95,14 +95,15 @@ public class Contactos extends AppCompatActivity {
     private List<Contacto> inicializarContactos() {
         List<Contacto> contactos = new ArrayList<>();
         // Asumiendo que tienes imágenes predeterminadas para cada contacto en res/drawable
-        contactos.add(new Contacto(1, "Ruben", "Rivera", "+507 0000-0001", R.drawable.yo_xx));
-        contactos.add(new Contacto(2, "Patron", "Murcia", "+507 0000-0002", R.drawable.elpatron));
-        contactos.add(new Contacto(3, "Tortilla", "Cuara", "+507 0000-0003", R.drawable.frieren));
-        contactos.add(new Contacto(4, "Escalera", "domicilio", "+507 0000-0004", R.drawable.sala));
-        contactos.add(new Contacto(5, "Micaelo", "aparecio", "+507 0000-0005", R.drawable.woot));
-        contactos.add(new Contacto(6, "Pollo", "gratis", "+507 0000-0006", R.drawable.pollo));
+        contactos.add(new Contacto(1, "Ruben", "Rivera", "+507 0000-0001", "android.resource://com.example.parcial2/drawable/yo_xx"));
+        contactos.add(new Contacto(2, "Patron", "Murcia", "+507 0000-0002", "android.resource://com.example.parcial2/drawable/elpatron"));
+        contactos.add(new Contacto(3, "Tortilla", "Cuara", "+507 0000-0003", "android.resource://com.example.parcial2/drawable/frieren"));
+        contactos.add(new Contacto(4, "Escalera", "domicilio", "+507 0000-0004", "android.resource://com.example.parcial2/drawable/sala"));
+        contactos.add(new Contacto(5, "Micaelo", "aparecio", "+507 0000-0005", "android.resource://com.example.parcial2/drawable/woot"));
+        contactos.add(new Contacto(6, "Pollo", "gratis", "+507 0000-0006", "android.resource://com.example.parcial2/drawable/pollo"));
         return contactos;
     }
+
 
     private void guardarContactos(List<Contacto> contactos) {
         SharedPreferences prefs = getSharedPreferences("ContactosPrefs", MODE_PRIVATE);

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import com.example.parcial2.Chat;
 import com.example.parcial2.Entidades.Contacto;
 import com.example.parcial2.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class ContactoAdapter extends ArrayAdapter<Contacto> {
         TextView apellidoTextView = convertView.findViewById(R.id.apellidoEnChat);
 
         if (contacto != null) {
-            imageView.setImageResource(contacto.getImagenId());
+            Picasso.get().load(contacto.getImagenId()).into(imageView);
             nombreTextView.setText(contacto.getNombre());
             apellidoTextView.setText(contacto.getApellido());
 

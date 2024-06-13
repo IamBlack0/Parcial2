@@ -5,9 +5,9 @@ public class Contacto {
     private String nombre;
     private String apellido;
     private String telefono;
-    private int imagenId; // ID del recurso de la imagen
+    private String imagenId; // Ahora es String en lugar de int
 
-    public Contacto(int id, String nombre, String apellido, String telefono, int imagenId) {
+    public Contacto(int id, String nombre, String apellido, String telefono, String imagenId) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -32,11 +32,11 @@ public class Contacto {
         return telefono;
     }
 
-    public int getImagenId() {
+    public String getImagenId() {
         return imagenId;
     }
 
-    public void setImagenId(int imagenId) {
+    public void setImagenId(String imagenId) {
         this.imagenId = imagenId;
     }
 }

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import com.example.parcial2.Chat;
 import com.example.parcial2.Entidades.Conversacion;
 import com.example.parcial2.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -48,7 +49,8 @@ public class ConversacionAdapter extends ArrayAdapter<Conversacion> {
 
         Conversacion conversacion = getItem(position);
         if (conversacion != null) {
-            holder.imageView.setImageResource(conversacion.getImagenId());
+            // Usar Picasso para cargar la imagen desde una URL o ruta
+            Picasso.get().load(conversacion.getImagenId()).into(holder.imageView);
             holder.nombreTextView.setText(conversacion.getNombre());
             holder.timestampTextView.setText(conversacion.getTimestamp());
             holder.messageTextView.setText(conversacion.getUltimoMensaje());

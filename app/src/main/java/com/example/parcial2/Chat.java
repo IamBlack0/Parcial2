@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.parcial2.Adaptadores.MensajeAdapter;
 import com.example.parcial2.Entidades.Mensaje;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,12 +50,12 @@ public class Chat extends AppCompatActivity {
         Intent intent = getIntent();
         String nombre = intent.getStringExtra("nombre");
         String apellido = intent.getStringExtra("apellido");
-        int imagenId = intent.getIntExtra("imagenId", R.drawable.baseline_person_24);
+        String imagenId = intent.getStringExtra("imagenId");
         usuarioId = intent.getIntExtra("usuarioId", -1); // Obtener el ID del usuario actual
         contactoId = intent.getIntExtra("contactoId", -1); // Obtener el ID del contacto actual
         destinatarioContactoId = intent.getIntExtra("destinatarioContactoId", -1); // Obtener el ID del contacto destinatario actual
 
-        profileImage.setImageResource(imagenId);
+        Picasso.get().load(imagenId).into(profileImage); // Usar Picasso para cargar la imagen
         nombreTextView.setText(nombre);
         apellidoTextView.setText(apellido);
 

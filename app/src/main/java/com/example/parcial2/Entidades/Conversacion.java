@@ -6,11 +6,11 @@ public class Conversacion {
     private int destinatarioContactoId;
     private String nombre;
     private String apellido;
-    private int imagenId;
+    private String imagenId; // Ahora es String en lugar de int
     private String ultimoMensaje;
     private String timestamp;
 
-    public Conversacion(int usuarioId, int contactoId, int destinatarioContactoId, String nombre, String apellido, int imagenId, String ultimoMensaje, String timestamp) {
+    public Conversacion(int usuarioId, int contactoId, int destinatarioContactoId, String nombre, String apellido, String imagenId, String ultimoMensaje, String timestamp) {
         this.usuarioId = usuarioId;
         this.contactoId = contactoId;
         this.destinatarioContactoId = destinatarioContactoId;
@@ -21,7 +21,7 @@ public class Conversacion {
         this.timestamp = timestamp;
     }
 
-
+    // Getters y setters
     public int getUsuarioId() {
         return usuarioId;
     }
@@ -42,7 +42,7 @@ public class Conversacion {
         return apellido;
     }
 
-    public int getImagenId() {
+    public String getImagenId() {
         return imagenId;
     }
 
@@ -52,5 +52,9 @@ public class Conversacion {
 
     public String getTimestamp() {
         return timestamp;
+    }
+
+    public void setImagenId(String imagenId) {
+        this.imagenId = imagenId;
     }
 }
